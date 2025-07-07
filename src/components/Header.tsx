@@ -9,7 +9,7 @@ export default function Header() {
           <Link href="/" className="flex items-center gap-2 group">
             <BrainCircuit className="h-8 w-8 text-primary group-hover:text-accent transition-colors" />
             <h1 className="text-2xl font-bold font-headline text-primary group-hover:text-accent transition-colors">
-              PinealVision
+              3rd Eye CrossTraining
             </h1>
           </Link>
         </div>

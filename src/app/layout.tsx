@@ -5,7 +5,7 @@ import Header from '@/components/Header';
 import { cn } from '@/lib/utils';
 
 export const metadata: Metadata = {
-  title: 'PinealVision',
+  title: '3rd Eye CrossTraining',
   description: 'Stimulate your 3rd eye Pineal gland with stereoscopic video exercises.',
 };
 
