@@ -1,5 +1,4 @@
 
-
 export interface Video {
   id: string;
   level: number;
@@ -19,7 +18,7 @@ export interface Unit {
 export const exerciseData: Unit[] = [
   {
     id: 'unit-1',
-    title: 'Level 1: Foundational Attunement',
+    title: 'Level 1: Red Group',
     description: 'Begin your journey by gently awakening your senses and preparing your mind for deeper exploration. These exercises focus on basic relaxation and visualization.',
     videos: [
       { id: 'vid-1-1', level: 1, title: 'Exercise 1: Stillness Breath', description: 'A guided breathing exercise to calm the nervous system and center your awareness.', thumbnailUrl: 'https://placehold.co/800x450', videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4' },
@@ -41,7 +40,7 @@ export const exerciseData: Unit[] = [
   },
   {
     id: 'unit-2',
-    title: 'Level 2: Pineal Activation',
+    title: 'Level 2: Yellow Group',
     description: 'Engage in exercises designed to directly stimulate the pineal gland through specific frequencies and more complex visual patterns.',
     videos: [
         { id: 'vid-2-1', level: 16, title: 'Exercise 16: Vibrational Humming', description: 'A deep humming meditation that creates vibrations resonating with the pineal gland.', thumbnailUrl: 'https://placehold.co/800x450', videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4' },
@@ -63,7 +62,7 @@ export const exerciseData: Unit[] = [
   },
   {
     id: 'unit-3',
-    title: 'Level 3: Expanding Consciousness',
+    title: 'Level 3: Blue Group',
     description: 'Journey beyond the self with advanced techniques that aim to open pathways to higher states of awareness and intuitive insight.',
     videos: [
         { id: 'vid-3-1', level: 31, title: 'Exercise 31: Cosmic Voyage', description: 'An immersive journey through stars and galaxies to expand your sense of self.', thumbnailUrl: 'https://placehold.co/800x450', videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4' },
@@ -84,5 +83,3 @@ export const exerciseData: Unit[] = [
     ],
   },
 ];
-
-    
