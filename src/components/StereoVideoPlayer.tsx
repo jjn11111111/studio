@@ -12,8 +12,7 @@ interface StereoVideoPlayerProps {
 
 export default function StereoVideoPlayer({ thumbnailUrl, videoUrl }: StereoVideoPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
-  const videoRefLeft = useRef<HTMLVideoElement>(null);
-  const videoRefRight = useRef<HTMLVideoElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [isHovered, setIsHovered] = useState(false);
 
   const handlePlayPause = () => {
@@ -21,11 +20,9 @@ export default function StereoVideoPlayer({ thumbnailUrl, videoUrl }: StereoVide
     setIsPlaying(nextIsPlaying);
     
     if (nextIsPlaying) {
-      videoRefLeft.current?.play().catch(console.error);
-      videoRefRight.current?.play().catch(console.error);
+      videoRef.current?.play().catch(console.error);
     } else {
-      videoRefLeft.current?.pause();
-      videoRefRight.current?.pause();
+      videoRef.current?.pause();
     }
   };
 
@@ -41,33 +38,19 @@ export default function StereoVideoPlayer({ thumbnailUrl, videoUrl }: StereoVide
       onMouseLeave={() => setIsHovered(false)}
       onClick={handlePlayPause}
     >
-      <div className="flex h-full w-full bg-black">
-        <div className="relative w-1/2 h-full border-r border-gray-700">
-          <video
-            ref={videoRefLeft}
-            src={videoUrl}
-            poster={thumbnailUrl}
-            loop
-            playsInline
-            muted
-            className="w-full h-full object-cover"
-            onPlay={() => setIsPlaying(true)}
-            onPause={() => setIsPlaying(false)}
-            data-ai-hint="abstract space"
-          />
-        </div>
-        <div className="relative w-1/2 h-full">
-          <video
-            ref={videoRefRight}
-            src={videoUrl}
-            poster={thumbnailUrl}
-            loop
-            playsInline
-            muted
-            className="w-full h-full object-cover"
-            data-ai-hint="abstract space"
-          />
-        </div>
+      <div className="h-full w-full bg-black">
+        <video
+          ref={videoRef}
+          src={videoUrl}
+          poster={thumbnailUrl}
+          loop
+          playsInline
+          muted
+          className="w-full h-full object-cover"
+          onPlay={() => setIsPlaying(true)}
+          onPause={() => setIsPlaying(false)}
+          data-ai-hint="abstract space"
+        />
       </div>
       <div className={`absolute inset-0 flex items-center justify-center bg-black/40 transition-opacity ${(isHovered || !isPlaying) ? 'opacity-100' : 'opacity-0'}`}>
         <Button
