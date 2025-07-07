@@ -4,6 +4,7 @@ export interface Video {
   title: string;
   description: string;
   thumbnailUrl: string;
+  videoUrl: string;
 }
 
 export interface Unit {
@@ -25,6 +26,7 @@ export const exerciseData: Unit[] = [
         title: 'Breathing into Stillness',
         description: 'A guided breathing exercise to calm the nervous system and center your awareness.',
         thumbnailUrl: 'https://placehold.co/800x450',
+        videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
       },
       {
         id: 'vid-1-2',
@@ -32,6 +34,7 @@ export const exerciseData: Unit[] = [
         title: 'The Light Within',
         description: 'Visualize a gentle light glowing in the center of your forehead, preparing the energetic space of the third eye.',
         thumbnailUrl: 'https://placehold.co/800x450',
+        videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
       },
       {
         id: 'vid-1-3',
@@ -39,6 +42,7 @@ export const exerciseData: Unit[] = [
         title: 'Sacred Geometry Primer',
         description: 'Observe simple, rotating geometric shapes to train your focus and introduce your mind to visual meditation.',
         thumbnailUrl: 'https://placehold.co/800x450',
+        videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
       },
     ],
   },
@@ -53,6 +57,7 @@ export const exerciseData: Unit[] = [
         title: 'Vibrational Humming',
         description: 'A deep humming meditation that creates vibrations resonating with the pineal gland.',
         thumbnailUrl: 'https://placehold.co/800x450',
+        videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
       },
       {
         id: 'vid-2-2',
@@ -60,6 +65,7 @@ export const exerciseData: Unit[] = [
         title: 'Pulsating Indigo Light',
         description: 'Focus on a pulsating indigo light, a color associated with the third eye chakra, to energize and activate.',
         thumbnailUrl: 'https://placehold.co/800x450',
+        videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
       },
       {
         id: 'vid-2-3',
@@ -67,6 +73,7 @@ export const exerciseData: Unit[] = [
         title: 'Mandala Focus',
         description: 'Deepen your meditative state by focusing on intricate, evolving mandala patterns.',
         thumbnailUrl: 'https://placehold.co/800x450',
+        videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4',
       },
     ],
   },
@@ -81,6 +88,7 @@ export const exerciseData: Unit[] = [
         title: 'Cosmic Voyage',
         description: 'An immersive journey through stars and galaxies to expand your sense of self and connect with the cosmos.',
         thumbnailUrl: 'https://placehold.co/800x450',
+        videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
       },
       {
         id: 'vid-3-2',
@@ -88,6 +96,7 @@ export const exerciseData: Unit[] = [
         title: 'Gateway to Intuition',
         description: 'This exercise uses abstract visual cues to help you listen to and trust your inner voice.',
         thumbnailUrl: 'https://placehold.co/800x450',
+        videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4',
       },
       {
         id: 'vid-3-3',
@@ -95,6 +104,7 @@ export const exerciseData: Unit[] = [
         title: 'Vision Quest',
         description: 'The final exercise combines all learned techniques in a free-form visual meditation to unlock your inner vision.',
         thumbnailUrl: 'https://placehold.co/800x450',
+        videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4',
       },
     ],
   },

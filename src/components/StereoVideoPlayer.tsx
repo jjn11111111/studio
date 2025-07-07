@@ -1,36 +1,84 @@
-import Image from 'next/image';
+'use client';
+
+import { useState, useRef } from 'react';
 import { Card } from './ui/card';
+import { Play, Pause } from 'lucide-react';
+import { Button } from './ui/button';
 
 interface StereoVideoPlayerProps {
   thumbnailUrl: string;
+  videoUrl: string;
 }
 
-export default function StereoVideoPlayer({ thumbnailUrl }: StereoVideoPlayerProps) {
+export default function StereoVideoPlayer({ thumbnailUrl, videoUrl }: StereoVideoPlayerProps) {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const videoRefLeft = useRef<HTMLVideoElement>(null);
+  const videoRefRight = useRef<HTMLVideoElement>(null);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handlePlayPause = () => {
+    const nextIsPlaying = !isPlaying;
+    setIsPlaying(nextIsPlaying);
+    
+    if (nextIsPlaying) {
+      videoRefLeft.current?.play().catch(console.error);
+      videoRefRight.current?.play().catch(console.error);
+    } else {
+      videoRefLeft.current?.pause();
+      videoRefRight.current?.pause();
+    }
+  };
+
+  const togglePlayButton = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    handlePlayPause();
+  };
+
   return (
-    <Card className="aspect-video w-full overflow-hidden shadow-lg border-2 border-primary/20">
+    <Card 
+      className="aspect-video w-full overflow-hidden shadow-lg border-2 border-primary/20 relative cursor-pointer"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={handlePlayPause}
+    >
       <div className="flex h-full w-full bg-black">
         <div className="relative w-1/2 h-full border-r border-gray-700">
-          <Image
-            src={thumbnailUrl}
-            alt="Left eye view"
-            layout="fill"
-            objectFit="cover"
-            priority
+          <video
+            ref={videoRefLeft}
+            src={videoUrl}
+            poster={thumbnailUrl}
+            loop
+            playsInline
+            muted
+            className="w-full h-full object-cover"
+            onPlay={() => setIsPlaying(true)}
+            onPause={() => setIsPlaying(false)}
             data-ai-hint="abstract space"
           />
-           <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
         </div>
         <div className="relative w-1/2 h-full">
-          <Image
-            src={thumbnailUrl}
-            alt="Right eye view"
-            layout="fill"
-            objectFit="cover"
-            priority
+          <video
+            ref={videoRefRight}
+            src={videoUrl}
+            poster={thumbnailUrl}
+            loop
+            playsInline
+            muted
+            className="w-full h-full object-cover"
             data-ai-hint="abstract space"
           />
-           <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
         </div>
+      </div>
+      <div className={`absolute inset-0 flex items-center justify-center bg-black/40 transition-opacity ${(isHovered || !isPlaying) ? 'opacity-100' : 'opacity-0'}`}>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={togglePlayButton}
+          className="h-20 w-20 text-white hover:bg-white/20 hover:text-white rounded-full backdrop-blur-sm"
+          aria-label={isPlaying ? 'Pause video' : 'Play video'}
+        >
+          {isPlaying ? <Pause className="h-12 w-12" /> : <Play className="h-12 w-12 ml-2" />}
+        </Button>
       </div>
     </Card>
   );

@@ -61,7 +61,7 @@ export default function ExercisePage({
 
             <div className="flex-grow grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2 flex flex-col gap-6">
-                <StereoVideoPlayer thumbnailUrl={video.thumbnailUrl} />
+                <StereoVideoPlayer thumbnailUrl={video.thumbnailUrl} videoUrl={video.videoUrl} />
                 <div className="flex justify-between items-center mt-auto pt-4">
                   {previousVideoLink ? (
                     <Link href={previousVideoLink} passHref legacyBehavior>
