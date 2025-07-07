@@ -3,6 +3,7 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import Header from '@/components/Header';
 import { cn } from '@/lib/utils';
+import Footer from '@/components/Footer';
 
 export const metadata: Metadata = {
   title: '3rd Eye CrossTraining',
@@ -24,6 +25,7 @@ export default function RootLayout({
       <body className={cn('font-body antialiased min-h-screen flex flex-col')}>
         <Header />
         <main className="flex-grow">{children}</main>
+        <Footer />
         <Toaster />
       </body>
     </html>
