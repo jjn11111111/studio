@@ -51,12 +51,12 @@ export default function UnitCard({ unit, completedVideos, isInitialized }: UnitC
           {completedInUnit} / {totalInUnit} COMPLETED
         </div>
         <Progress value={progress} aria-label={`${progress.toFixed(0)}% complete`} />
-        <Link href={isLocked ? '#' : startLink} passHref legacyBehavior>
-          <Button disabled={isLocked} className="bg-accent hover:bg-accent/90">
+        <Button asChild disabled={isLocked} className="bg-accent hover:bg-accent/90">
+          <Link href={isLocked ? '#' : startLink}>
             {isLocked ? <Lock /> : (progress === 100 ? <ArrowRight/> : <PlayCircle />)}
             <span className="ml-2">{isLocked ? 'Locked' : (progress < 100 ? 'Start' : 'Review')}</span>
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </CardContent>
     </Card>
   );

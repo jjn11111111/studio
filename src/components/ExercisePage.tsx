@@ -67,9 +67,9 @@ export default function ExercisePage({
                 <StereoVideoPlayer thumbnailUrl={video.thumbnailUrl} videoUrl={video.videoUrl} />
                 <div className="flex justify-between items-center mt-auto pt-4">
                   {previousVideoLink ? (
-                    <Link href={previousVideoLink} passHref legacyBehavior>
-                      <Button variant="outline"><ArrowLeft className="mr-2 h-4 w-4" /> Previous</Button>
-                    </Link>
+                    <Button asChild variant="outline">
+                      <Link href={previousVideoLink}><ArrowLeft className="mr-2 h-4 w-4" /> Previous</Link>
+                    </Button>
                   ) : <div />}
                   <Button onClick={handleComplete} size="lg" className="bg-primary hover:bg-primary/90">
                     <CheckCircle className="mr-2 h-5 w-5" />

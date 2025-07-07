@@ -40,26 +40,24 @@ export default function ExerciseSidebar({ unit, currentVideoId, completedVideos 
             const isActive = video.id === currentVideoId;
             return (
               <SidebarMenuItem key={video.id}>
-                <Link href={`/exercise/${unit.id}/${video.id}`} className="w-full" passHref legacyBehavior>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={isActive}
-                    tooltip={video.title}
-                    className={cn(
-                        "justify-start w-full",
-                        isActive && "font-bold bg-accent/10 text-accent-foreground",
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive}
+                  tooltip={video.title}
+                  className={cn(
+                      "justify-start w-full",
+                      isActive && "font-bold bg-accent/10 text-accent-foreground",
+                  )}
+                >
+                  <Link href={`/exercise/${unit.id}/${video.id}`}>
+                    {isCompleted ? (
+                      <CheckCircle className="h-4 w-4 text-primary" />
+                    ) : (
+                      <Circle className="h-4 w-4 text-muted-foreground" />
                     )}
-                  >
-                    <a>
-                      {isCompleted ? (
-                        <CheckCircle className="h-4 w-4 text-primary" />
-                      ) : (
-                        <Circle className="h-4 w-4 text-muted-foreground" />
-                      )}
-                      <span>{video.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </Link>
+                    <span>{video.title}</span>
+                  </Link>
+                </SidebarMenuButton>
               </SidebarMenuItem>
             );
           })}
