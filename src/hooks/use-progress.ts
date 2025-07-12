@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
 
-const PROGRESS_KEY = 'pinealVisionProgress';
+const PROGRESS_KEY = 'thirdEyeCrossTrainingProgress';
 
 export function useProgress() {
   const [completedVideos, setCompletedVideos] = useState<Set<string>>(new Set());
