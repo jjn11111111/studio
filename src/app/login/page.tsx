@@ -6,8 +6,8 @@ export default function LoginPage() {
     <div className="flex items-center justify-center min-h-screen bg-muted">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold font-headline">Access Your Training</CardTitle>
-          <CardDescription>Sign in or create an account to continue.</CardDescription>
+          <CardTitle className="text-2xl font-bold font-headline">Unlock Your Vision</CardTitle>
+          <CardDescription>Sign in or create an account to begin.</CardDescription>
         </CardHeader>
         <CardContent>
           <AuthForm />
