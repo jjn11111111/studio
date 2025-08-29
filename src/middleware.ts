@@ -5,7 +5,7 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // These are the routes that require authentication
-  const protectedRoutes = ['/training', '/exercise', '/profile'];
+  const protectedRoutes = ['/training', '/exercise', '/profile', '/journal'];
 
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
 
@@ -26,5 +26,5 @@ export function middleware(request: NextRequest) {
 
 // See "Matching Paths" below to learn more
 export const config = {
-  matcher: ['/training/:path*', '/exercise/:path*', '/profile'],
+  matcher: ['/training/:path*', '/exercise/:path*', '/profile', '/journal/:path*'],
 };
