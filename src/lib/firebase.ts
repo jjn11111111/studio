@@ -9,7 +9,7 @@ const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
   projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_bucket,
   messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
@@ -17,13 +17,17 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
-// Initialize App Check
-if (typeof window !== 'undefined') {
-  const appCheck = initializeAppCheck(app, {
-    provider: new ReCaptchaV3Provider(process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!),
-    isTokenAutoRefreshEnabled: true
-  });
-}
+// Initialize App Check - TEMPORARILY DISABLED
+// if (typeof window !== 'undefined') {
+//   try {
+//     const appCheck = initializeAppCheck(app, {
+//       provider: new ReCaptchaV3Provider(process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!),
+//       isTokenAutoRefreshEnabled: true
+//     });
+//   } catch (error) {
+//     console.error("App Check initialization error:", error);
+//   }
+// }
 
 
 const auth = getAuth(app);
