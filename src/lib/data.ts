@@ -59,7 +59,7 @@ export const exerciseData: Unit[] = [
     title: 'Module 3: Blue Group',
     description: 'Journey beyond the self with advanced techniques that aim to open pathways to higher states of awareness and intuitive insight.',
     videos: [
-        { id: 'vid-3-1', level: 21, title: 'Module 3(a)spen', description: 'An immersive journey through stars and galaxies to expand your sense of self.', thumbnailUrl: 'https://placehold.co/800x450', videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4' },
+        { id: 'vid-3-1', level: 21, title: 'Module 3(a)spen', description: 'An immersive journey through stars and galaxies to expand your sense of self.', thumbnailUrl: 'https://placehold.co/800x450', videoUrl: 'https://firebasestorage.googleapis.com/v0/b/pinealvision.firebasestorage.app/o/Video.mp4?alt=media' },
         { id: 'vid-3-2', level: 22, title: 'Module 3(b)eech', description: 'Use abstract visual cues to help you listen to your inner voice.', thumbnailUrl: 'https://placehold.co/800x450', videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4' },
         { id: 'vid-3-3', level: 23, title: 'Module 3(c)atalpa', description: 'A free-form visual meditation to unlock your inner vision.', thumbnailUrl: 'https://placehold.co/800x450', videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4' },
         { id: 'vid-3-4', level: 24, title: 'Module 3(d)ogwood', description: 'Meditation on the concept of universal consciousness.', thumbnailUrl: 'https://placehold.co/800x450', videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4' },
