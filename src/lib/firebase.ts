@@ -9,7 +9,7 @@ import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
 const firebaseConfig = {
   projectId: "pinealvision",
   appId: "1:590588534644:web:3b4d95c8aa84c355ba9621",
-  storageBucket: "pinealvision.appspot.com",
+  storageBucket: "pinealvision.firebasestorage.app",
   apiKey: "AIzaSyCvoQb8ycCZb-FbaWWS87YPjPDwtrw6Dus",
   authDomain: "pinealvision.firebaseapp.com",
   measurementId: "G-PLS89S3H00",
@@ -19,26 +19,26 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
-// Initialize App Check
-// IMPORTANT: This is now enabled for production security.
-// For this to work, you must:
-// 1. Create a reCAPTCHA v3 site key in your Google Cloud Console.
-// 2. Add it to a .env.local file as NEXT_PUBLIC_RECAPTCHA_SITE_KEY="your-key-here".
+// Initialize App Check conditionally
+// IMPORTANT: This is for production security.
 if (typeof window !== 'undefined') {
   try {
-    // To test locally, you will need to add a NEXT_PUBLIC_RECAPTCHA_DEBUG_TOKEN variable
-    // to a .env.local file with the debug token from your Firebase console.
+    // Debug token for local development.
+    // This allows testing App Check on localhost.
+    // Generate a new debug token in your Firebase Console (App Check > Apps > Your Web App > Manage debug tokens)
     if (process.env.NEXT_PUBLIC_RECAPTCHA_DEBUG_TOKEN) {
       (self as any).FIREBASE_APPCHECK_DEBUG_TOKEN = process.env.NEXT_PUBLIC_RECAPTCHA_DEBUG_TOKEN;
     }
     
-    if (process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY) {
+    // Only initialize App Check if a site key is provided and it's not the placeholder.
+    // Replace the placeholder in your .env or hosting environment for production.
+    if (process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY && process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY !== 'your-recaptcha-v3-site-key') {
         initializeAppCheck(app, {
           provider: new ReCaptchaV3Provider(process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY),
           isTokenAutoRefreshEnabled: true
         });
     } else {
-        console.warn("Firebase App Check is not initialized. NEXT_PUBLIC_RECAPTCHA_SITE_KEY is missing from your .env.local file.");
+        console.warn("Firebase App Check is not initialized. For production, set NEXT_PUBLIC_RECAPTCHA_SITE_KEY in your environment.");
     }
   } catch (error) {
     console.error("App Check initialization error:", error);
