@@ -51,7 +51,7 @@ export const exerciseData: Unit[] = [
         { id: 'vid-2-7', level: 17, title: 'Module 2(g)iraffe', description: 'Chanting specific seed sounds (bija mantras) for the third eye.', thumbnailUrl: 'https://placehold.co/800x450', videoUrl: 'https://firebasestorage.googleapis.com/v0/b/pinealvision.firebasestorage.app/o/A895F267-429A-49AD-8FA3-A1A36676DCC5.mov?alt=media' },
         { id: 'vid-2-8', level: 18, title: 'Module 2(h)ummingbird', description: 'Directing energy to the third eye using geometric flows.', thumbnailUrl: 'https://placehold.co/800x450', videoUrl: 'https://firebasestorage.googleapis.com/v0/b/pinealvision.firebasestorage.app/o/BEBCAC8F-717C-427F-9CD3-C903E91F3B03%202.MOV?alt=media' },
         { id: 'vid-2-9', level: 19, title: 'Module 2(i)guana', description: 'Advanced visualization: building an inner sanctuary.', thumbnailUrl: 'https://placehold.co/800x450', videoUrl: 'https://firebasestorage.googleapis.com/v0/b/pinealvision.firebasestorage.app/o/Video%2017.MP4?alt=media&token=05e8ad7c-3a15-42c7-9c79-95dc5c452cef' },
-        { id: 'vid-2-10', level: 20, title: 'Module 2(j)aguar', description: 'Introduction to scrying with a dark mirror or crystal.', thumbnailUrl: 'https://placehold.co/800x450', videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4' },
+        { id: 'vid-2-10', level: 20, title: 'Module 2(j)aguar', description: 'Introduction to scrying with a dark mirror or crystal.', thumbnailUrl: 'https://placehold.co/800x450', videoUrl: 'https://firebasestorage.googleapis.com/v0/b/pinealvision.firebasestorage.app/o/Video%2018.MP4?alt=media' },
     ],
   },
   {
