@@ -31,7 +31,8 @@ const registerSchema = z.object({
 
 export default function AuthForm() {
   const [activeTab, setActiveTab] = useState('login');
-  const { signUp, signIn, error, setError, isLoading } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { signUp, signIn, error, setError } = useAuth();
 
   useEffect(() => {
     setError(null);
@@ -48,13 +49,27 @@ export default function AuthForm() {
   });
 
   const handleLogin = async (values: z.infer<typeof loginSchema>) => {
-    await signIn(values.email, values.password);
-    // The AuthProvider will handle redirection now.
+    setIsSubmitting(true);
+    try {
+      await signIn(values.email, values.password);
+      // The AuthProvider will handle redirection now.
+    } catch (e) {
+      // Error is already handled in useAuth hook
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleRegister = async (values: z.infer<typeof registerSchema>) => {
-    await signUp(values.email, values.password);
-    // The AuthProvider will handle redirection now.
+    setIsSubmitting(true);
+    try {
+      await signUp(values.email, values.password);
+      // The AuthProvider will handle redirection now.
+    } catch (e) {
+      // Error is already handled in useAuth hook
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -93,8 +108,8 @@ export default function AuthForm() {
               )}
             />
             {error && <p className="text-sm font-medium text-destructive">{error}</p>}
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Login
             </Button>
           </form>
@@ -130,8 +145,8 @@ export default function AuthForm() {
               )}
             />
             {error && <p className="text-sm font-medium text-destructive">{error}</p>}
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Create Account
             </Button>
           </form>
