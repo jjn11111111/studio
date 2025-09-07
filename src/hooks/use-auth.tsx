@@ -47,6 +47,7 @@ export function AuthProvider({children}: {children: ReactNode}) {
     signOutUser,
   };
 
+  // Prevent flicker of content by only rendering children when loading is complete
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">

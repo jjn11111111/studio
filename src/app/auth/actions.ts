@@ -6,7 +6,6 @@ import {getFirebaseAdminApp} from '@/lib/firebase-admin';
 import {signInWithEmailAndPassword} from 'firebase/auth';
 import {getAuth as getClientAuth} from 'firebase/auth';
 import {app as clientApp} from '@/lib/firebase';
-import {doc, setDoc, getFirestore} from 'firebase/firestore';
 import {getFirestore as getAdminFirestore} from 'firebase-admin/firestore';
 
 const app = getFirebaseAdminApp();
@@ -79,6 +78,8 @@ export async function signInWithEmail(formData: FormData) {
 
     return {success: true};
   } catch (error: any) {
+    // Firebase's client-side SDK has more generic error messages for security
+    // This is a reasonable default for a failed login attempt.
     return {error: 'Invalid email or password.'};
   }
 }
