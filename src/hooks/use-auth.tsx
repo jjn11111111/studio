@@ -9,10 +9,11 @@ import {
   signInWithEmailAndPassword,
   User,
   getAuth,
+  UserCredential,
 } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { app, db as getDb } from '@/lib/firebase';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 
 const setAuthTokenCookie = (token: string | null) => {
@@ -27,8 +28,8 @@ const setAuthTokenCookie = (token: string | null) => {
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
-  signIn: (email: string, pass: string) => Promise<boolean>;
-  signUp: (email: string, pass: string) => Promise<boolean>;
+  signIn: (email: string, pass: string) => Promise<UserCredential | null>;
+  signUp: (email: string, pass: string) => Promise<UserCredential | null>;
   signOutUser: () => Promise<void>;
   error: string | null;
   setError: (error: string | null) => void;
@@ -41,6 +42,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     const auth = getAuth(app);
@@ -58,10 +60,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
   
   useEffect(() => {
-    if (user && !isLoading) {
+    // Only redirect if the user is logged in, no longer loading, and on the login page.
+    if (user && !isLoading && pathname === '/login') {
        router.replace('/training');
     }
-  }, [user, isLoading, router]);
+  }, [user, isLoading, router, pathname]);
 
   const signUp = async (email: string, password: string) => {
     setIsLoading(true);
@@ -78,11 +81,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           status: 'free',
         },
       });
-      // The onAuthStateChanged listener will handle the user state and cookie
-      return true;
+      // The onAuthStateChanged listener will handle setting the user and the cookie.
+      // And the useEffect above will handle the redirect.
+      return userCredential;
     } catch (e: any) {
       setError(e.message);
-      return false;
+      return null;
     } finally {
       setIsLoading(false);
     }
@@ -93,12 +97,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setError(null);
     try {
       const auth = getAuth(app);
-      await signInWithEmailAndPassword(auth, email, password);
-      // The onAuthStateChanged listener will handle the user state and cookie
-      return true;
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      // The onAuthStateChanged listener will handle setting the user and the cookie.
+      // And the useEffect above will handle the redirect.
+      return userCredential;
     } catch (e: any) {
       setError(e.message);
-      return false;
+      return null;
     } finally {
       setIsLoading(false);
     }

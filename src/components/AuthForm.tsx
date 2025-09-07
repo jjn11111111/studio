@@ -18,6 +18,7 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/hooks/use-auth';
 import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Invalid email address.' }),
@@ -31,7 +32,8 @@ const registerSchema = z.object({
 
 export default function AuthForm() {
   const [activeTab, setActiveTab] = useState('login');
-  const { signUp, signIn, isLoading, error, setError } = useAuth();
+  const { user, signUp, signIn, isLoading, error, setError } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     setError(null);
@@ -49,12 +51,12 @@ export default function AuthForm() {
 
   const handleLogin = async (values: z.infer<typeof loginSchema>) => {
     await signIn(values.email, values.password);
-    // Redirection is handled by the AuthProvider
+    // Redirection is now handled by the AuthProvider
   };
 
   const handleRegister = async (values: z.infer<typeof registerSchema>) => {
     await signUp(values.email, values.password);
-    // Redirection is handled by the AuthProvider
+    // Redirection is now handled by the AuthProvider
   };
 
   return (
