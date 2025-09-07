@@ -81,14 +81,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           status: 'free',
         },
       });
-      // The onAuthStateChanged listener will handle setting the user and the cookie.
-      // And the useEffect above will handle the redirect.
+      // The onAuthStateChanged listener will handle setting the user, the cookie,
+      // and the useEffect above will handle the redirect.
       return userCredential;
     } catch (e: any) {
       setError(e.message);
       return null;
     } finally {
-      setIsLoading(false);
+      // Don't set isLoading to false here, onAuthStateChanged will do it.
     }
   };
 
@@ -98,14 +98,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const auth = getAuth(app);
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      // The onAuthStateChanged listener will handle setting the user and the cookie.
-      // And the useEffect above will handle the redirect.
+       // The onAuthStateChanged listener will handle setting the user, the cookie,
+      // and the useEffect above will handle the redirect.
       return userCredential;
     } catch (e: any) {
       setError(e.message);
       return null;
     } finally {
-      setIsLoading(false);
+      // Don't set isLoading to false here, onAuthStateChanged will do it.
     }
   };
 
@@ -119,7 +119,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (e: any) {
       setError(e.message);
     } finally {
-      setIsLoading(false);
+      // onAuthStateChanged will set isLoading to false.
     }
   };
 
