@@ -39,10 +39,10 @@ export default function AuthForm() {
   }, [activeTab, setError]);
   
   useEffect(() => {
-    if (user) {
+    if (user && !isLoading) {
         router.replace('/training');
     }
-  }, [user, router]);
+  }, [user, isLoading, router]);
 
 
   const loginForm = useForm<z.infer<typeof loginSchema>>({
