@@ -1,105 +1,49 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import {
-  onAuthStateChanged,
-  signOut,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  User,
-  getAuth,
-} from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
-import { app, db as getDb } from '@/lib/firebase';
-import { Loader2 } from 'lucide-react';
-import { setAuthCookie, clearAuthCookie } from '@/app/auth/actions';
-import { useRouter } from 'next/navigation';
+import {createContext, useContext, useEffect, useState, ReactNode} from 'react';
+import {onAuthStateChanged, User, getAuth} from 'firebase/auth';
+import {app} from '@/lib/firebase';
+import {Loader2} from 'lucide-react';
+import {useRouter} from 'next/navigation';
+import {clearSessionCookie} from '@/app/auth/actions';
 
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
-  signIn: (email: string, pass: string) => Promise<void>;
-  signUp: (email: string, pass: string) => Promise<void>;
   signOutUser: () => Promise<void>;
-  error: string | null;
-  setError: (error: string | null) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({children}: {children: ReactNode}) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const auth = getAuth(app);
   const router = useRouter();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
-      if (user) {
-        try {
-            const token = await user.getIdToken();
-            await setAuthCookie(token);
-        } catch (cookieError) {
-            console.error("Failed to set auth cookie:", cookieError)
-        }
-      } else {
-        await clearAuthCookie();
-      }
       setIsLoading(false);
     });
     return () => unsubscribe();
   }, [auth]);
-
-  const signUp = async (email: string, password: string): Promise<void> => {
-    setError(null);
-    try {
-        const db = getDb();
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const newUser = userCredential.user;
-        await setDoc(doc(db, 'users', newUser.uid), {
-            email: newUser.email,
-            createdAt: new Date(),
-            subscription: { status: 'free' },
-        });
-    } catch (e: any) {
-        const errorCode = e.code || 'An unknown error occurred';
-        setError(errorCode.replace('auth/', '').replace(/-/g, ' '));
-        throw e;
-    }
-  };
-
-  const signIn = async (email: string, password: string): Promise<void> => {
-    setError(null);
-    try {
-        await signInWithEmailAndPassword(auth, email, password);
-    } catch (e: any) {
-        const errorCode = e.code || 'An unknown error occurred';
-        setError(errorCode.replace('auth/', '').replace(/-/g, ' '));
-        throw e;
-    }
-  };
-
+  
   const signOutUser = async (): Promise<void> => {
-    setError(null);
     try {
-      await signOut(auth);
+      await auth.signOut();
+      await clearSessionCookie();
       router.push('/login');
+      router.refresh();
     } catch (e: any) {
-      setError(e.message);
-      throw e;
+      console.error('Sign out error', e);
     }
   };
 
   const value = {
     user,
     isLoading,
-    signIn,
-    signUp,
     signOutUser,
-    error,
-    setError,
   };
 
   if (isLoading) {

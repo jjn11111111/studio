@@ -1,29 +1,45 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import {NextResponse} from 'next/server';
+import type {NextRequest} from 'next/server';
+import {getAuth} from 'firebase-admin/auth';
+import {getFirebaseAdminApp} from './lib/firebase-admin';
+
+async function verifySessionCookie(cookie: string | undefined) {
+  if (!cookie) return null;
+  try {
+    const app = getFirebaseAdminApp();
+    const decodedClaims = await getAuth(app).verifySessionCookie(cookie, true);
+    return decodedClaims;
+  } catch (error) {
+    console.error('Error verifying session cookie:', error);
+    return null;
+  }
+}
 
 export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-  const authToken = request.cookies.get('firebaseAuthToken')?.value;
+  const {pathname} = request.nextUrl;
+  const sessionCookie = request.cookies.get('__session')?.value;
+  const decodedToken = await verifySessionCookie(sessionCookie);
 
-  // If the user is logged in, redirect them away from the login page
-  if (authToken && pathname === '/login') {
-    return NextResponse.redirect(new URL('/training', request.url));
-  }
+  const isAuthPage = pathname === '/login';
 
-  // These are the routes that require authentication
-  const protectedRoutes = ['/training', '/exercise', '/profile', '/journal'];
-  const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
+  if (decodedToken) {
+    // If logged in, redirect away from login page
+    if (isAuthPage) {
+      return NextResponse.redirect(new URL('/training', request.url));
+    }
+  } else {
+    // If not logged in, protect routes
+    const protectedRoutes = ['/training', '/exercise', '/profile', '/journal'];
+    const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
 
-  if (isProtectedRoute && !authToken) {
-    const loginUrl = new URL('/login', request.url);
-    loginUrl.searchParams.set('redirect_to', pathname);
-    return NextResponse.redirect(loginUrl);
+    if (isProtectedRoute) {
+      return NextResponse.redirect(new URL('/login', request.url));
+    }
   }
 
   return NextResponse.next();
 }
 
-// See "Matching Paths" below to learn more
 export const config = {
   matcher: ['/training/:path*', '/exercise/:path*', '/profile', '/journal', '/login'],
 };
