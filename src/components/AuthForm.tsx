@@ -32,6 +32,7 @@ const registerSchema = z.object({
 export default function AuthForm() {
   const [activeTab, setActiveTab] = useState('login');
   const { user, signUp, signIn, error, setError, isLoading } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -55,12 +56,16 @@ export default function AuthForm() {
     defaultValues: { email: '', password: '' },
   });
 
-  const handleLogin = async (values: z.infer<typeof loginSchema>) => {
+  const handleLogin = async (values: z.infer<typeof login.tsx>) => {
+    setIsSubmitting(true);
     await signIn(values.email, values.password);
+    setIsSubmitting(false);
   };
 
   const handleRegister = async (values: z.infer<typeof registerSchema>) => {
+    setIsSubmitting(true);
     await signUp(values.email, values.password);
+    setIsSubmitting(false);
   };
 
   return (
@@ -99,8 +104,8 @@ export default function AuthForm() {
               )}
             />
             {error && <p className="text-sm font-medium text-destructive">{error}</p>}
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Login
             </Button>
           </form>
@@ -136,8 +141,8 @@ export default function AuthForm() {
               )}
             />
             {error && <p className="text-sm font-medium text-destructive">{error}</p>}
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Create Account
             </Button>
           </form>
