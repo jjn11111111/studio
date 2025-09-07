@@ -53,8 +53,8 @@ export default function AuthForm() {
     try {
       await signIn(values.email, values.password);
       // The AuthProvider will handle redirection now.
-    } catch (e) {
-      // Error is already handled in useAuth hook
+    } catch (e: any) {
+      setError(e.message);
     } finally {
       setIsSubmitting(false);
     }
@@ -65,8 +65,8 @@ export default function AuthForm() {
     try {
       await signUp(values.email, values.password);
       // The AuthProvider will handle redirection now.
-    } catch (e) {
-      // Error is already handled in useAuth hook
+    } catch (e: any) {
+      setError(e.message);
     } finally {
       setIsSubmitting(false);
     }

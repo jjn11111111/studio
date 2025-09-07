@@ -27,8 +27,8 @@ const setAuthTokenCookie = (token: string | null) => {
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
-  signIn: (email: string, pass: string) => Promise<void>;
-  signUp: (email: string, pass: string) => Promise<void>;
+  signIn: (email: string, pass: string) => Promise<any>;
+  signUp: (email: string, pass: string) => Promise<any>;
   signOutUser: () => Promise<void>;
   error: string | null;
   setError: (error: string | null) => void;
@@ -42,9 +42,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const pathname = usePathname();
+  const auth = getAuth(app);
 
   useEffect(() => {
-    const auth = getAuth(app);
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
       if (user) {
@@ -56,63 +56,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(false);
     });
     return () => unsubscribe();
-  }, []);
+  }, [auth]);
   
   useEffect(() => {
-    // Only redirect if the user is logged in, no longer loading, and on the login page.
-    if (user && !isLoading && pathname === '/login') {
+    if (!isLoading && user && pathname === '/login') {
        router.replace('/training');
     }
   }, [user, isLoading, router, pathname]);
 
   const signUp = async (email: string, password: string) => {
     setError(null);
-    setIsLoading(true);
-    try {
-      const auth = getAuth(app);
-      const db = getDb();
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-      await setDoc(doc(db, 'users', user.uid), {
-        email: user.email,
-        createdAt: new Date(),
-        subscription: {
-          status: 'free',
-        },
-      });
-      // The onAuthStateChanged listener will handle setting the user, cookie, and redirect.
-    } catch (e: any) {
-      setError(e.message);
-    } finally {
-        setIsLoading(false);
-    }
+    const db = getDb();
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+    await setDoc(doc(db, 'users', user.uid), {
+      email: user.email,
+      createdAt: new Date(),
+      subscription: {
+        status: 'free',
+      },
+    });
+    return userCredential;
   };
 
   const signIn = async (email: string, password: string) => {
     setError(null);
-    setIsLoading(true);
-    try {
-      const auth = getAuth(app);
-      await signInWithEmailAndPassword(auth, email, password);
-      // The onAuthStateChanged listener will handle setting the user, cookie, and redirect.
-    } catch (e: any) {
-      setError(e.message);
-    } finally {
-        setIsLoading(false);
-    }
+    return signInWithEmailAndPassword(auth, email, password);
   };
 
   const signOutUser = async (): Promise<void> => {
     setError(null);
-    setIsLoading(true);
     try {
-      const auth = getAuth(app);
       await signOut(auth);
       router.push('/');
     } catch (e: any) {
       setError(e.message);
-    } finally {
-        setIsLoading(false);
     }
   };
 
@@ -126,9 +104,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setError,
   };
 
-  // This outer isLoading check is for the initial load of the app
-  // before Firebase has determined if a user is logged in or not.
-  if (isLoading && !user) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Loader2 className="w-8 h-8 animate-spin" />
