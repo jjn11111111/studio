@@ -12,7 +12,7 @@ export function ColoredGroupTitle({ title, className }: ColoredGroupTitleProps) 
   const colorWordIndex = parts.findIndex(part => ['Red', 'Yellow', 'Blue'].includes(part));
 
   if (colorWordIndex === -1) {
-    return <>{title}</>;
+    return <span className={cn(className)}>{title}</span>;
   }
 
   const colorWord = parts[colorWordIndex];
