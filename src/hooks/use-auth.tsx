@@ -12,6 +12,7 @@ import {
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth as getAuth, db as getDb } from '@/lib/firebase';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { Loader2 } from 'lucide-react';
 
 // Helper function to manage the auth token cookie
 const setAuthTokenCookie = (token: string | null) => {
