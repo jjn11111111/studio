@@ -64,10 +64,10 @@ export default function Logo({ className }: { className?: string }) {
         textAnchor="middle"
       >
         <textPath href="#circlePath" startOffset="25%">
-          Britney
+          re:connect
         </textPath>
         <textPath href="#circlePath" startOffset="75%">
-          Spears
+          zero
         </textPath>
       </text>
     </svg>
