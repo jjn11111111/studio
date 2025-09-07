@@ -52,11 +52,11 @@ export default function AuthForm() {
     setIsSubmitting(true);
     try {
       await signIn(values.email, values.password);
-      window.location.assign('/training');
+      // Hard redirect to ensure the new cookie is sent.
+      window.location.href = '/training';
     } catch (e) {
-      // error is set in the hook
-    } finally {
-      setIsSubmitting(false);
+       // error is set in the hook
+       setIsSubmitting(false);
     }
   };
 
@@ -64,11 +64,11 @@ export default function AuthForm() {
     setIsSubmitting(true);
     try {
       await signUp(values.email, values.password);
-      window.location.assign('/training');
+       // Hard redirect to ensure the new cookie is sent.
+      window.location.href = '/training';
     } catch (e) {
        // error is set in the hook
-    } finally {
-      setIsSubmitting(false);
+       setIsSubmitting(false);
     }
   };
 
