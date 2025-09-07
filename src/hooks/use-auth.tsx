@@ -11,17 +11,14 @@ import {
 } from 'firebase/auth';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth as getAuth, db as getDb } from '@/lib/firebase';
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 
-// Helper function to manage the auth token cookie
 const setAuthTokenCookie = (token: string | null) => {
   if (typeof document === 'undefined') return;
   if (token) {
-    // Set cookie that expires in 24 hours
     document.cookie = `firebaseAuthToken=${token}; path=/; max-age=86400; SameSite=Lax; Secure`;
   } else {
-    // Delete cookie
     document.cookie = 'firebaseAuthToken=; path=/; max-age=-1;';
   }
 };
@@ -29,8 +26,8 @@ const setAuthTokenCookie = (token: string | null) => {
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
-  signIn: (email: string, pass: string) => Promise<UserCredential | void>;
-  signUp: (email: string, pass: string) => Promise<UserCredential | void>;
+  signIn: (email: string, pass: string) => Promise<UserCredential | null>;
+  signUp: (email: string, pass: string) => Promise<UserCredential | null>;
   signOutUser: () => Promise<void>;
   error: string | null;
   setError: (error: string | null) => void;
@@ -43,6 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     const auth = getAuth();
@@ -60,6 +58,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (!isLoading && user && pathname === '/login') {
+        router.replace('/training');
+    }
+  }, [user, isLoading, pathname, router]);
 
   const signUp = async (email: string, password: string) => {
     setIsLoading(true);
@@ -79,6 +83,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return userCredential;
     } catch (e: any) {
       setError(e.message);
+      return null;
     } finally {
       setIsLoading(false);
     }
@@ -92,6 +97,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return await signInWithEmailAndPassword(auth, email, password);
     } catch (e: any) {
       setError(e.message);
+      return null;
     } finally {
       setIsLoading(false);
     }
