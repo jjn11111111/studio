@@ -94,7 +94,7 @@ export default function AuthForm() {
                     <Input type="password" placeholder="••••••••" {...field} />
                   </FormControl>
                   <FormMessage />
-                </Item>
+                </FormItem>
               )}
             />
             {error && <p className="text-sm font-medium text-destructive">{error}</p>}
@@ -131,7 +131,7 @@ export default function AuthForm() {
                     <Input type="password" placeholder="••••••••" {...field} />
                   </FormControl>
                   <FormMessage />
-                </Item>
+                </FormItem>
               )}
             />
             {error && <p className="text-sm font-medium text-destructive">{error}</p>}
