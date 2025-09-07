@@ -17,6 +17,7 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/hooks/use-auth';
 import { Loader2 } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Invalid email address.' }),
@@ -32,6 +33,7 @@ export default function AuthForm() {
   const [activeTab, setActiveTab] = useState('login');
   const { signUp, signIn, error, setError } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     setError(null);
@@ -51,7 +53,8 @@ export default function AuthForm() {
     setIsSubmitting(true);
     try {
       await signIn(values.email, values.password);
-      // Redirection is now handled by the useAuth hook
+      const redirectTo = searchParams.get('redirect_to') || '/training';
+      window.location.assign(redirectTo);
     } catch (e) {
       // error is handled by the hook
     } finally {
@@ -63,7 +66,8 @@ export default function AuthForm() {
     setIsSubmitting(true);
     try {
       await signUp(values.email, values.password);
-      // Redirection is now handled by the useAuth hook
+      const redirectTo = searchParams.get('redirect_to') || '/training';
+      window.location.assign(redirectTo);
     } catch (e) {
       // error is handled by the hook
     } finally {
@@ -135,7 +139,7 @@ export default function AuthForm() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>Password</FormLabel>                  
                   <FormControl>
                     <Input type="password" placeholder="••••••••" {...field} />
                   </FormControl>

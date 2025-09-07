@@ -8,10 +8,11 @@ import {
   signInWithEmailAndPassword,
   User,
   getAuth,
+  IdTokenResult,
 } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { app, db as getDb } from '@/lib/firebase';
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 
 const setAuthTokenCookie = (token: string | null) => {
@@ -40,8 +41,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
   const auth = getAuth(app);
 
   useEffect(() => {
@@ -57,13 +56,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
     return () => unsubscribe();
   }, [auth]);
-
-  useEffect(() => {
-    if (!isLoading && user && pathname === '/login') {
-        const redirectTo = searchParams.get('redirect_to') || '/training';
-        router.replace(redirectTo);
-    }
-  }, [user, isLoading, pathname, router, searchParams]);
 
   const signUp = async (email: string, password: string) => {
     setError(null);
