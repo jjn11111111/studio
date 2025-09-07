@@ -67,7 +67,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [user, isLoading, router, pathname]);
 
   const signUp = async (email: string, password: string) => {
-    setIsLoading(true);
     setError(null);
     try {
       const auth = getAuth(app);
@@ -81,40 +80,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           status: 'free',
         },
       });
-      const token = await user.getIdToken();
-      setAuthTokenCookie(token);
       // The onAuthStateChanged listener will handle setting the user, the cookie,
       // and the useEffect above will handle the redirect.
       return userCredential;
     } catch (e: any) {
       setError(e.message);
       return null;
-    } finally {
-      setIsLoading(false);
     }
   };
 
   const signIn = async (email: string, password: string) => {
-    setIsLoading(true);
     setError(null);
     try {
       const auth = getAuth(app);
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const token = await userCredential.user.getIdToken();
-      setAuthTokenCookie(token);
        // The onAuthStateChanged listener will handle setting the user, the cookie,
       // and the useEffect above will handle the redirect.
       return userCredential;
     } catch (e: any) {
       setError(e.message);
       return null;
-    } finally {
-      setIsLoading(false);
     }
   };
 
   const signOutUser = async (): Promise<void> => {
-    setIsLoading(true);
     setError(null);
     try {
       const auth = getAuth(app);
@@ -122,8 +111,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       router.push('/');
     } catch (e: any) {
       setError(e.message);
-    } finally {
-      // onAuthStateChanged will set isLoading to false.
     }
   };
 

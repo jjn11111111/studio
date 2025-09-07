@@ -31,7 +31,7 @@ const registerSchema = z.object({
 
 export default function AuthForm() {
   const [activeTab, setActiveTab] = useState('login');
-  const { signUp, signIn, isLoading, error, setError } = useAuth();
+  const { signUp, signIn, error, setError } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -62,7 +62,7 @@ export default function AuthForm() {
     setIsSubmitting(false);
   };
   
-  const isFormLoading = isLoading || isSubmitting;
+  const isFormLoading = isSubmitting;
 
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
