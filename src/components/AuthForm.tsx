@@ -9,16 +9,15 @@ import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
-  FormField,
   FormItem,
   FormLabel,
   FormMessage,
+  FormField,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/hooks/use-auth';
 import { Loader2 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Invalid email address.' }),
@@ -32,8 +31,8 @@ const registerSchema = z.object({
 
 export default function AuthForm() {
   const [activeTab, setActiveTab] = useState('login');
-  const { user, signUp, signIn, isLoading, error, setError } = useAuth();
-  const router = useRouter();
+  const { signUp, signIn, isLoading, error, setError } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     setError(null);
@@ -50,14 +49,20 @@ export default function AuthForm() {
   });
 
   const handleLogin = async (values: z.infer<typeof loginSchema>) => {
+    setIsSubmitting(true);
     await signIn(values.email, values.password);
-    // Redirection is now handled by the AuthProvider
+    // The AuthProvider will handle redirection now.
+    setIsSubmitting(false);
   };
 
   const handleRegister = async (values: z.infer<typeof registerSchema>) => {
+    setIsSubmitting(true);
     await signUp(values.email, values.password);
-    // Redirection is now handled by the AuthProvider
+    // The AuthProvider will handle redirection now.
+    setIsSubmitting(false);
   };
+  
+  const isFormLoading = isLoading || isSubmitting;
 
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -95,8 +100,8 @@ export default function AuthForm() {
               )}
             />
             {error && <p className="text-sm font-medium text-destructive">{error}</p>}
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            <Button type="submit" className="w-full" disabled={isFormLoading}>
+              {isFormLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Login
             </Button>
           </form>
@@ -132,8 +137,8 @@ export default function AuthForm() {
               )}
             />
             {error && <p className="text-sm font-medium text-destructive">{error}</p>}
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            <Button type="submit" className="w-full" disabled={isFormLoading}>
+              {isFormLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Create Account
             </Button>
           </form>

@@ -49,7 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
       if (user) {
-        const token = await user.getIdToken(true);
+        const token = await user.getIdToken();
         setAuthTokenCookie(token);
       } else {
         setAuthTokenCookie(null);
@@ -81,6 +81,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           status: 'free',
         },
       });
+      const token = await user.getIdToken();
+      setAuthTokenCookie(token);
       // The onAuthStateChanged listener will handle setting the user, the cookie,
       // and the useEffect above will handle the redirect.
       return userCredential;
@@ -88,7 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setError(e.message);
       return null;
     } finally {
-      // Don't set isLoading to false here, onAuthStateChanged will do it.
+      setIsLoading(false);
     }
   };
 
@@ -98,6 +100,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const auth = getAuth(app);
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const token = await userCredential.user.getIdToken();
+      setAuthTokenCookie(token);
        // The onAuthStateChanged listener will handle setting the user, the cookie,
       // and the useEffect above will handle the redirect.
       return userCredential;
@@ -105,7 +109,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setError(e.message);
       return null;
     } finally {
-      // Don't set isLoading to false here, onAuthStateChanged will do it.
+      setIsLoading(false);
     }
   };
 
