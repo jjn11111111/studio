@@ -9,21 +9,22 @@ interface ColoredGroupTitleProps {
 
 export function ColoredGroupTitle({ title, className }: ColoredGroupTitleProps) {
   const parts = title.split(' ');
-  const colorWordIndex = parts.findIndex(part => ['Red', 'Yellow', 'Blue'].includes(part));
-
-  if (colorWordIndex === -1) {
-    return <span className={cn(className)}>{title}</span>;
-  }
-
-  const colorWord = parts[colorWordIndex];
   
+  const colorMap: { [key: string]: string } = {
+    'Red': 'text-red-500',
+    'Yellow': 'text-yellow-500',
+    'Blue': 'text-blue-500',
+  };
+
   return (
     <span className={cn(className)}>
-      {parts.slice(0, colorWordIndex).join(' ')}
-      {' '}
-      <span className="text-primary">{colorWord}</span>
-      {' '}
-      {parts.slice(colorWordIndex + 1).join(' ')}
+      {parts.map((part, index) => {
+        const colorClass = colorMap[part];
+        if (colorClass) {
+          return <span key={index} className={cn(colorClass, 'font-bold')}>{part}</span>;
+        }
+        return <span key={index}> {part} </span>;
+      })}
     </span>
   );
 }

@@ -97,7 +97,7 @@ export default function TrainingPage() {
                            ) : (
                              <BrainCircuit className="h-4 w-4 text-muted-foreground" />
                            )}
-                           <span className={cn("text-primary", isActive && "text-accent-foreground")}>
+                           <span className={cn(isActive ? "text-accent-foreground" : "text-primary-foreground")}>
                              {video.level}. {video.title}
                            </span>
                          </SidebarMenuButton>
