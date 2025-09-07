@@ -56,10 +56,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const token = await user.getIdToken();
         setAuthTokenCookie(token);
 
-        // Redirect if user is on the login page
+        // Redirect if user is on the login page after auth state is confirmed
         if (pathname === '/login') {
             const redirectTo = searchParams.get('redirect_to') || '/training';
-            router.replace(redirectTo);
+            window.location.href = redirectTo; // Use hard navigation to ensure cookie is sent
         }
 
       } else {
@@ -87,7 +87,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           status: 'free',
         },
       });
-      // Don't set user here, onAuthStateChanged will handle it.
+      // Don't set user or redirect here, onAuthStateChanged will handle it.
       return userCredential;
     } catch (e: any) {
       setError(e.message);
@@ -103,7 +103,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const auth = getAuth();
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      // Don't set user here, onAuthStateChanged will handle it.
+      // Don't set user or redirect here, onAuthStateChanged will handle it.
       return userCredential;
     } catch (e: any) {
       setError(e.message);
