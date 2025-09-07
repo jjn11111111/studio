@@ -85,7 +85,7 @@ export default function Header() {
               </DropdownMenu>
             ) : (
               <Button asChild>
-                <Link href="/login">Login</Link>
+                <Link href="/">Login</Link>
               </Button>
             )}
           </nav>
