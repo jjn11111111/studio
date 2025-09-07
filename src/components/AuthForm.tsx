@@ -50,16 +50,22 @@ export default function AuthForm() {
 
   const handleLogin = async (values: z.infer<typeof loginSchema>) => {
     setIsSubmitting(true);
-    await signIn(values.email, values.password);
-    // The AuthProvider will handle redirection now.
-    setIsSubmitting(false);
+    try {
+      await signIn(values.email, values.password);
+      // The AuthProvider will handle redirection now.
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleRegister = async (values: z.infer<typeof registerSchema>) => {
     setIsSubmitting(true);
-    await signUp(values.email, values.password);
-    // The AuthProvider will handle redirection now.
-    setIsSubmitting(false);
+    try {
+      await signUp(values.email, values.password);
+      // The AuthProvider will handle redirection now.
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   
   const isFormLoading = isSubmitting;
