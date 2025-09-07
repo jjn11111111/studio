@@ -59,7 +59,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Redirect if user is on the login page after auth state is confirmed
         if (pathname === '/login') {
             const redirectTo = searchParams.get('redirect_to') || '/training';
-            window.location.href = redirectTo; // Use hard navigation to ensure cookie is sent
+            // Use replace instead of push to avoid login page in history
+            router.replace(redirectTo);
         }
 
       } else {
@@ -70,7 +71,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     return () => unsubscribe();
-  }, [pathname, router, searchParams]);
+  // We only want router, pathname, and searchParams in the dependency array
+  // because we don't want to re-run this effect on every render.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname, searchParams]);
 
   const signUp = async (email: string, password: string) => {
     setIsLoading(true);
@@ -87,7 +91,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           status: 'free',
         },
       });
-      // Don't set user or redirect here, onAuthStateChanged will handle it.
+      // onAuthStateChanged will handle setting the user and redirecting
       return userCredential;
     } catch (e: any) {
       setError(e.message);
@@ -103,7 +107,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const auth = getAuth();
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      // Don't set user or redirect here, onAuthStateChanged will handle it.
+      // onAuthStateChanged will handle setting the user and redirecting
       return userCredential;
     } catch (e: any) {
       setError(e.message);
@@ -137,7 +141,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setError,
   };
 
-  return <AuthContext.Provider value={value}>{!isLoading && children}</AuthContext.Provider>;
+  // We show a loader while auth state is resolving to prevent flashes of unauthenticated content
+  if (isLoading) {
+    return (
+        <div className="flex items-center justify-center min-h-screen">
+            <Loader2 className="w-8 h-8 animate-spin" />
+        </div>
+    )
+  }
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {

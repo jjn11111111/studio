@@ -4,6 +4,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 import Footer from '@/components/Footer';
 import { AuthProvider } from '@/hooks/use-auth';
+import { Loader2 } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: '3rd Eye CrossTraining',
