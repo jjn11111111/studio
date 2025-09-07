@@ -31,21 +31,13 @@ const registerSchema = z.object({
 
 export default function AuthForm() {
   const [activeTab, setActiveTab] = useState('login');
-  const { user, signUp, signIn, error, setError, isLoading } = useAuth();
+  const { signUp, signIn, error, setError } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const router = useRouter();
 
   useEffect(() => {
     setError(null);
   }, [activeTab, setError]);
   
-  useEffect(() => {
-    if (user && !isLoading) {
-        router.replace('/training');
-    }
-  }, [user, isLoading, router]);
-
-
   const loginForm = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: { email: '', password: '' },
@@ -58,14 +50,24 @@ export default function AuthForm() {
 
   const handleLogin = async (values: z.infer<typeof loginSchema>) => {
     setIsSubmitting(true);
-    await signIn(values.email, values.password);
-    setIsSubmitting(false);
+    try {
+      await signIn(values.email, values.password);
+    } catch (e) {
+      // error is handled by the hook
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleRegister = async (values: z.infer<typeof registerSchema>) => {
     setIsSubmitting(true);
-    await signUp(values.email, values.password);
-    setIsSubmitting(false);
+    try {
+      await signUp(values.email, values.password);
+    } catch (e) {
+      // error is handled by the hook
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

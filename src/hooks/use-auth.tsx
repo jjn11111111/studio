@@ -52,9 +52,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => unsubscribe();
   }, [auth]);
 
+  useEffect(() => {
+    if (!isLoading && user) {
+      router.replace('/training');
+    }
+  }, [user, isLoading, router]);
+
   const signUp = async (email: string, password: string) => {
     setError(null);
-    setIsLoading(true);
     try {
       const db = getDb();
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -68,20 +73,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
     } catch (e: any) {
         setError(e.message);
-    } finally {
-      setIsLoading(false);
+        throw e;
     }
   };
 
   const signIn = async (email: string, password: string) => {
     setError(null);
-    setIsLoading(true);
     try {
       await signInWithEmailAndPassword(auth, email, password);
     } catch (e: any) {
         setError(e.message);
-    } finally {
-      setIsLoading(false);
+        throw e;
     }
   };
 
@@ -105,7 +107,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setError,
   };
 
-  if (isLoading && !user) {
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Loader2 className="w-8 h-8 animate-spin" />
