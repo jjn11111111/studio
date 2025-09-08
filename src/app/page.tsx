@@ -1,19 +1,41 @@
-export default function Home() {
+import Header from '@/components/Header';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import { ArrowRight, BrainCircuit } from 'lucide-react';
+import Logo from '@/components/Logo';
+
+export default function HomePage() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-yellow-200 text-black p-10">
-      <div className="text-center border-4 border-black p-8">
-        <h1 className="text-6xl font-bold animate-pulse">LOOK HERE</h1>
-        <p className="text-4xl mt-4">
-          The list of files is on the LEFT side of your screen.
-        </p>
-        <p className="text-9xl mt-8 font-mono">{'<'}{'—'}{'—'}{'—'}</p>
-        <p className="text-2xl mt-8">
-          You will see <span className="font-mono bg-white p-1">.env</span> and <span className="font-mono bg-white p-1">README.md</span> in that list on the left.
-        </p>
-        <p className="text-2xl mt-4">
-          That entire column is the **File List**.
-        </p>
-      </div>
+    <div className="flex flex-col min-h-screen bg-background text-foreground">
+      <Header />
+      <main className="flex-grow">
+        <section className="relative text-center py-20 md:py-32 lg:py-40 px-4 overflow-hidden">
+          <div className="absolute inset-0 aurora-bg z-0"></div>
+          <div className="relative z-10 container mx-auto">
+            <div className="flex justify-center mb-8">
+              <Logo className="w-32 h-32 text-primary" />
+            </div>
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold font-headline text-primary animate-fade-in-down">
+              3rd Eye CrossTraining
+            </h1>
+            <p className="mt-6 max-w-3xl mx-auto text-lg md:text-xl text-muted-foreground animate-fade-in-up delay-200">
+              Unlock human potential through the focused application of visual and sensory stimulation. These stereoscopic video exercises are designed to gently activate the pineal gland.
+            </p>
+            <div className="mt-10 flex flex-col sm:flex-row justify-center items-center gap-4 animate-fade-in-up delay-400">
+              <Button asChild size="lg" className="w-full sm:w-auto">
+                <Link href="/training">
+                  Begin Training <ArrowRight className="ml-2" />
+                </Link>
+              </Button>
+              <Button asChild variant="outline" size="lg" className="w-full sm:w-auto">
+                <Link href="/about">
+                  Learn More
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </section>
+      </main>
     </div>
   );
 }
