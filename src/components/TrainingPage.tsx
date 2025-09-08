@@ -4,7 +4,7 @@
 import { exerciseData } from '@/lib/data';
 import type { Unit, Video } from '@/lib/data';
 import UnitCard from './UnitCard';
-import { BrainCircuit, CheckCircle, ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeftRight, CheckCircle } from 'lucide-react';
 import { Sidebar, SidebarContent, SidebarHeader, SidebarInset, SidebarMenuItem, SidebarMenu, SidebarProvider, SidebarMenuButton } from './ui/sidebar';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
@@ -34,7 +34,7 @@ export default function TrainingPage() {
         <Sidebar collapsible="icon">
            <SidebarHeader>
               <Link href="/" className="flex items-center gap-2">
-                <BrainCircuit className="h-6 w-6 text-primary" />
+                <ArrowLeftRight className="h-6 w-6 text-primary" />
                 <span className="font-bold text-lg font-headline text-primary">3rd Eye CrossTraining</span>
               </Link>
            </SidebarHeader>
@@ -59,7 +59,7 @@ export default function TrainingPage() {
                            {isCompleted ? (
                              <CheckCircle className="h-4 w-4 text-primary" />
                            ) : (
-                             <BrainCircuit className="h-4 w-4 text-muted-foreground" />
+                             <ArrowLeftRight className="h-4 w-4 text-muted-foreground" />
                            )}
                            <span>
                              <ColoredLetterTitle title={video.title} />
@@ -77,7 +77,6 @@ export default function TrainingPage() {
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
               <div className="text-center mb-12">
                 <h2 className="text-4xl md:text-5xl font-bold font-headline text-primary mb-2 flex items-center justify-center gap-4">
-                  <BrainCircuit className="w-12 h-12" />
                   CrossTraining Modules
                 </h2>
                 <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">

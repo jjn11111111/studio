@@ -9,7 +9,7 @@ import {
   SidebarMenuButton,
   SidebarTrigger,
 } from './ui/sidebar';
-import { CheckCircle, Circle, BrainCircuit } from 'lucide-react';
+import { CheckCircle, Circle, ArrowLeftRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import ColoredLetterTitle from './ColoredLetterTitle';
 
@@ -25,7 +25,7 @@ export default function ExerciseSidebar({ unit, currentVideoId, completedVideos 
       <SidebarHeader>
         <div className="flex items-center justify-between">
           <Link href="/training" className="flex items-center gap-2">
-            <BrainCircuit className="h-6 w-6 text-primary" />
+            <ArrowLeftRight className="h-6 w-6 text-primary" />
             <span className="font-bold text-lg font-headline text-primary">3rd Eye CrossTraining</span>
           </Link>
           <SidebarTrigger />

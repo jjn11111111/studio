@@ -1,6 +1,6 @@
 import Header from '@/components/Header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BrainCircuit, Dna, Eye, Waves, Lightbulb, Zap, ArrowRight } from 'lucide-react';
+import { Dna, Eye, Waves, Lightbulb, Zap, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
@@ -83,7 +83,7 @@ export default function AboutPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <BrainCircuit /> Neuro-Stimulation
+                  <Dna /> Neuro-Stimulation
                 </CardTitle>
               </CardHeader>
               <CardContent>
