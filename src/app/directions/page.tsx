@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { HelpCircle, Target, Eye, View, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function DirectionsPage() {
   return (
@@ -18,7 +19,7 @@ export default function DirectionsPage() {
 
         <div className="grid md:grid-cols-2 gap-8 items-center">
             <div>
-                <img src="https://placehold.co/600x400" alt="Abstract representation of vision" className="rounded-lg shadow-lg" data-ai-hint="abstract vision" />
+                <Image src="https://picsum.photos/600/400" alt="Abstract representation of vision" className="rounded-lg shadow-lg" width={600} height={400} data-ai-hint="abstract vision" />
             </div>
           <div className="space-y-6">
             <h2 className="text-3xl font-bold font-headline text-accent flex items-center gap-2"><HelpCircle/> The Technique</h2>
