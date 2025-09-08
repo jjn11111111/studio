@@ -51,7 +51,7 @@ export default function UnitCard({ unit, completedVideos, isInitialized, onSelec
     )}>
       <CardHeader className="w-full md:w-2/3">
           <CardTitle className="font-headline text-2xl">
-            {unit.title}: <span className={cn("font-bold", colorClass)}>{unit.groupName}</span>
+            {unit.title}: <span className={`font-bold ${colorClass}`}>{unit.groupName}</span>
           </CardTitle>
           <CardDescription>{unit.description}</CardDescription>
       </CardHeader>
