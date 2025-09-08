@@ -23,9 +23,6 @@ export default function UnitCard({ unit, completedVideos, isInitialized, onSelec
   const firstUncompletedVideo = unit.videos.find(v => !completedVideos.has(v.id)) || unit.videos[0];
   
   const isLocked = false; // Future logic for unlocking units can go here.
-  
-  const themeClass = `unit-${unit.id.split('-')[1]}-theme`;
-  const colorClass = `text-unit-${unit.id.split('-')[1]}`;
 
   if (!isInitialized) {
     return (
@@ -46,12 +43,11 @@ export default function UnitCard({ unit, completedVideos, isInitialized, onSelec
 
   return (
     <Card className={cn(
-        "flex flex-col md:flex-row items-center transition-all duration-300 hover:shadow-lg hover:-translate-y-1 overflow-hidden",
-        themeClass
+        "flex flex-col md:flex-row items-center transition-all duration-300 hover:shadow-lg hover:-translate-y-1 overflow-hidden"
     )}>
       <CardHeader className="w-full md:w-2/3">
           <CardTitle className="font-headline text-2xl">
-            {unit.title}: <span className={`font-bold ${colorClass}`}>{unit.groupName}</span>
+            {unit.title}: <span className="font-bold text-primary">{unit.groupName}</span>
           </CardTitle>
           <CardDescription>{unit.description}</CardDescription>
       </CardHeader>
