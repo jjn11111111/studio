@@ -58,13 +58,11 @@ export default function ExercisePage() {
     }
   };
 
-  const getThemeClass = (unit: Unit | undefined) => {
-    if (!unit) return '';
+  const getThemeClass = (unit: Unit) => {
     return `unit-${unit.id.split('-')[1]}-theme`;
   };
 
-  const getColorClass = (unit: Unit | undefined) => {
-    if (!unit) return '';
+  const getColorClass = (unit: Unit) => {
     return `text-unit-${unit.id.split('-')[1]}`;
   }
   

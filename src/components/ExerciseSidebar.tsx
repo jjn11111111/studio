@@ -21,8 +21,7 @@ interface ExerciseSidebarProps {
 }
 
 export default function ExerciseSidebar({ unit, currentVideoId, completedVideos }: ExerciseSidebarProps) {
-  const getColorClass = (unit: Unit | undefined) => {
-    if (!unit) return '';
+  const getColorClass = (unit: Unit) => {
     return `text-unit-${unit.id.split('-')[1]}`;
   }
 
@@ -38,8 +37,8 @@ export default function ExerciseSidebar({ unit, currentVideoId, completedVideos 
       </SidebarHeader>
       <SidebarContent>
         <div className="p-2">
-            <h3 className="text-sm font-semibold text-muted-foreground px-2 font-headline">
-              {unit.title}: <span className={cn("font-bold", getColorClass(unit))}>{unit.groupName}</span>
+            <h3 className={cn("text-sm font-semibold px-2 font-headline", getColorClass(unit))}>
+              {unit.title}: {unit.groupName}
             </h3>
         </div>
         <SidebarMenu>
@@ -54,7 +53,7 @@ export default function ExerciseSidebar({ unit, currentVideoId, completedVideos 
                   tooltip={video.title}
                   className={cn(
                       "justify-start w-full",
-                      isActive && "font-bold bg-accent/10 text-accent-foreground",
+                      isActive && "font-bold bg-accent text-accent-foreground",
                   )}
                 >
                   <Link href={`/exercise/${unit.id}/${video.id}`}>
@@ -63,7 +62,7 @@ export default function ExerciseSidebar({ unit, currentVideoId, completedVideos 
                     ) : (
                       <Circle className="h-4 w-4 text-muted-foreground" />
                     )}
-                    <span><ColoredLetterTitle title={video.title} unitId={unit.id} /></span>
+                    <ColoredLetterTitle title={video.title} unitId={unit.id} />
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

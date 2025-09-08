@@ -24,13 +24,11 @@ export default function UnitCard({ unit, completedVideos, isInitialized, onSelec
   
   const isLocked = false; // Future logic for unlocking units can go here.
 
-  const getThemeClass = (unit: Unit | undefined) => {
-    if (!unit) return '';
+  const getThemeClass = (unit: Unit) => {
     return `unit-${unit.id.split('-')[1]}-theme`;
   };
 
-  const getColorClass = (unit: Unit | undefined) => {
-    if (!unit) return '';
+  const getColorClass = (unit: Unit) => {
     return `text-unit-${unit.id.split('-')[1]}`;
   }
 
@@ -58,7 +56,7 @@ export default function UnitCard({ unit, completedVideos, isInitialized, onSelec
     )}>
       <CardHeader className="w-full md:w-2/3">
           <CardTitle className="font-headline text-2xl">
-            {unit.title}: <span className={cn("font-bold", getColorClass(unit))}>{unit.groupName}</span>
+            {unit.title}: <span className={cn(getColorClass(unit))}>{unit.groupName}</span>
           </CardTitle>
           <CardDescription>{unit.description}</CardDescription>
       </CardHeader>
@@ -67,7 +65,7 @@ export default function UnitCard({ unit, completedVideos, isInitialized, onSelec
           {completedInUnit} / {totalInUnit} COMPLETED
           </div>
           <Progress value={progress} aria-label={`${progress.toFixed(0)}% complete`} />
-          <Button onClick={() => onSelectVideo(firstUncompletedVideo)} disabled={isLocked} className="bg-accent hover:bg-accent/90 text-accent-foreground">
+          <Button onClick={() => onSelectVideo(firstUncompletedVideo)} disabled={isLocked} className="bg-primary hover:bg-primary/90 text-primary-foreground">
               {isLocked ? <Lock /> : (progress === 100 ? <ArrowRight/> : <PlayCircle />)}
               <span className="ml-2">{isLocked ? 'Locked' : (progress < 100 ? 'Start' : 'Review')}</span>
           </Button>

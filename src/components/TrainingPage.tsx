@@ -23,13 +23,11 @@ export default function TrainingPage() {
   };
 
 
-  const getThemeClass = (unit: Unit | undefined) => {
-    if (!unit) return '';
+  const getThemeClass = (unit: Unit) => {
     return `unit-${unit.id.split('-')[1]}-theme`;
   };
 
-  const getColorClass = (unit: Unit | undefined) => {
-    if (!unit) return '';
+  const getColorClass = (unit: Unit) => {
     return `text-unit-${unit.id.split('-')[1]}`;
   }
 
@@ -44,9 +42,9 @@ export default function TrainingPage() {
            </SidebarHeader>
            <SidebarContent>
             {exerciseData.map(unit => (
-               <div key={unit.id} className={cn("p-2", getThemeClass(unit))}>
-                 <h3 className="text-sm font-semibold text-muted-foreground px-2 font-headline">
-                   {unit.title}: <span className={cn("font-bold", getColorClass(unit))}>{unit.groupName}</span>
+               <div key={unit.id} className="p-2">
+                 <h3 className={cn("text-sm font-semibold px-2 font-headline", getColorClass(unit))}>
+                   {unit.title}: {unit.groupName}
                  </h3>
                  <SidebarMenu>
                   {unit.videos.map((video) => {
@@ -56,18 +54,14 @@ export default function TrainingPage() {
                          <SidebarMenuButton
                            onClick={() => handleSelectVideo(unit, video)}
                            tooltip={video.title}
-                           className={cn(
-                               "justify-start w-full",
-                           )}
+                           className="justify-start w-full"
                          >
                            {isCompleted ? (
                              <CheckCircle className="h-4 w-4 text-primary" />
                            ) : (
                              <Circle className="h-4 w-4 text-muted-foreground" />
                            )}
-                           <span>
-                             <ColoredLetterTitle title={video.title} unitId={unit.id} />
-                           </span>
+                           <ColoredLetterTitle title={video.title} unitId={unit.id} />
                          </SidebarMenuButton>
                        </SidebarMenuItem>
                     );
