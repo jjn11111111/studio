@@ -18,7 +18,7 @@ interface UnitCardProps {
 export default function UnitCard({ unit, completedVideos, isInitialized, onSelectVideo }: UnitCardProps) {
   const completedInUnit = unit.videos.filter(v => completedVideos.has(v.id)).length;
   const totalInUnit = unit.videos.length;
-  const progress = totalIn-unit > 0 ? (completedInUnit / totalInUnit) * 100 : 0;
+  const progress = totalInUnit > 0 ? (completedInUnit / totalInUnit) * 100 : 0;
 
   const firstUncompletedVideo = unit.videos.find(v => !completedVideos.has(v.id)) || unit.videos[0];
   
@@ -45,13 +45,14 @@ export default function UnitCard({ unit, completedVideos, isInitialized, onSelec
 
   return (
     <Card className={cn(
-        "flex flex-col md:flex-row items-center transition-all duration-300 hover:shadow-lg hover:-translate-y-1 overflow-hidden"
+        "flex flex-col md:flex-row items-center transition-all duration-300 hover:shadow-lg hover:-translate-y-1 overflow-hidden",
+        themeClass
     )}>
     <CardHeader className="w-full md:w-2/3">
-        <CardTitle className={cn("font-headline text-2xl text-primary", themeClass)}>{unit.title}</CardTitle>
+        <CardTitle className="font-headline text-2xl text-primary">{unit.title}</CardTitle>
         <CardDescription>{unit.description}</CardDescription>
     </CardHeader>
-    <CardContent className={cn("w-full md:w-1/3 p-6 flex flex-col items-center justify-center gap-4 bg-muted/50 h-full", themeClass)}>
+    <CardContent className="w-full md:w-1/3 p-6 flex flex-col items-center justify-center gap-4 bg-muted/50 h-full">
         <div className="text-sm font-medium text-muted-foreground">
         {completedInUnit} / {totalInUnit} COMPLETED
         </div>
