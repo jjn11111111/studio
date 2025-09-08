@@ -11,11 +11,19 @@ import {getFirestore as getAdminFirestore} from 'firebase-admin/firestore';
 
 function getAdminAuth() {
   const app = getFirebaseAdminApp();
+  if (!app) {
+    return { auth: null, adminDb: null };
+  }
   return { auth: getAuth(app), adminDb: getAdminFirestore(app) };
 }
 
 export async function createSessionCookie(idToken: string) {
   const { auth } = getAdminAuth();
+  if (!auth) {
+      console.error("Failed to create session cookie: Firebase Admin App not initialized.");
+      // This is a server error, but we can't do much without the admin SDK
+      return;
+  }
   const expiresIn = 60 * 60 * 24 * 5 * 1000; // 5 days
   const sessionCookie = await auth.createSessionCookie(idToken, {expiresIn});
   cookies().set('__session', sessionCookie, {
@@ -39,9 +47,13 @@ export async function signUpWithEmail(formData: FormData) {
     return {error: 'Email and password are required.'};
   }
   
+  const { auth, adminDb } = getAdminAuth();
+  
+  if (!auth || !adminDb) {
+      return { error: 'Server is not configured for authentication. Please contact support.' };
+  }
+  
   try {
-    const { auth, adminDb } = getAdminAuth();
-    
     const userRecord = await auth.createUser({
       email,
       password,
@@ -53,6 +65,9 @@ export async function signUpWithEmail(formData: FormData) {
         subscription: { status: 'free' },
     });
 
+    // We can't sign in the user on the server side easily after creation
+    // So we'll rely on the client to sign in after successful registration
+    // For now, let's just create the session cookie directly
     const clientAuth = getClientAuth(clientApp);
     const userCredential = await signInWithEmailAndPassword(clientAuth, email, password);
     const idToken = await userCredential.user.getIdToken();
@@ -74,6 +89,11 @@ export async function signInWithEmail(formData: FormData) {
 
   if (!email || !password) {
     return {error: 'Email and password are required.'};
+  }
+  
+  const { auth } = getAdminAuth();
+  if (!auth) {
+      return { error: 'Server is not configured for authentication. Please contact support.' };
   }
 
   try {
