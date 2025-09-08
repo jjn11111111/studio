@@ -5,15 +5,16 @@ const serviceAccountKey = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
 
 let adminApp: App | undefined;
 
-function initializeAdminApp() {
+function initializeAdminApp(): App | null {
+  if (getApps().some(app => app.name === 'firebase-admin-app')) {
+    return getApp('firebase-admin-app');
+  }
+  
   if (!serviceAccountKey) {
     console.error(
-      'FIREBASE_SERVICE_ACCOUNT_KEY is not set. Firebase Admin SDK could not be initialized.'
+      'CRITICAL: FIREBASE_SERVICE_ACCOUNT_KEY environment variable is not set. Firebase Admin SDK cannot be initialized. Server-side authentication actions will fail.'
     );
-    // Depending on the app's needs, you might want to throw an error
-    // or allow the app to continue running without admin features.
-    // For this app, auth actions will fail without it.
-    throw new Error('Firebase Admin SDK could not be initialized.');
+    return null;
   }
 
   try {
@@ -21,20 +22,19 @@ function initializeAdminApp() {
     const adminAppConfig = {
       credential: cert(serviceAccount),
     };
-    adminApp = initializeApp(adminAppConfig, 'firebase-admin-app');
+    return initializeApp(adminAppConfig, 'firebase-admin-app');
   } catch (error) {
-    console.error('Error parsing FIREBASE_SERVICE_ACCOUNT_KEY or initializing admin app:', error);
-    throw new Error('Firebase Admin SDK could not be initialized due to a configuration error.');
+    console.error('CRITICAL: Error parsing FIREBASE_SERVICE_ACCOUNT_KEY or initializing admin app:', error);
+    return null;
   }
 }
 
 export function getFirebaseAdminApp(): App {
-  if (!adminApp) {
-    if (getApps().some(app => app.name === 'firebase-admin-app')) {
-      adminApp = getApp('firebase-admin-app');
-    } else {
-      initializeAdminApp();
+    if (!adminApp) {
+        adminApp = initializeAdminApp() ?? undefined;
     }
-  }
-  return adminApp!;
+    if (!adminApp) {
+        throw new Error('Firebase Admin App is not available. Please check server logs for configuration errors.');
+    }
+    return adminApp;
 }

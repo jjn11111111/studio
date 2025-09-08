@@ -8,11 +8,20 @@ import {getAuth as getClientAuth} from 'firebase/auth';
 import {app as clientApp} from '@/lib/firebase';
 import {getFirestore as getAdminFirestore} from 'firebase-admin/firestore';
 
-const app = getFirebaseAdminApp();
-const auth = getAuth(app);
-const adminDb = getAdminFirestore(app);
+function getAdminAuth() {
+  try {
+    const app = getFirebaseAdminApp();
+    return { auth: getAuth(app), adminDb: getAdminFirestore(app) };
+  } catch (error) {
+    console.error("Failed to get Firebase Admin instance:", error);
+    return { auth: null, adminDb: null };
+  }
+}
 
 export async function createSessionCookie(idToken: string) {
+  const { auth } = getAdminAuth();
+  if (!auth) return;
+
   const expiresIn = 60 * 60 * 24 * 5 * 1000; // 5 days
   const sessionCookie = await auth.createSessionCookie(idToken, {expiresIn});
   cookies().set('__session', sessionCookie, {
@@ -29,6 +38,11 @@ export async function clearSessionCookie() {
 }
 
 export async function signUpWithEmail(formData: FormData) {
+  const { auth, adminDb } = getAdminAuth();
+  if (!auth || !adminDb) {
+    return {error: 'Server configuration error. Please try again later.'};
+  }
+
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
 
@@ -61,7 +75,7 @@ export async function signUpWithEmail(formData: FormData) {
 }
 
 export async function signInWithEmail(formData: FormData) {
-  const email = formData.get('email') as string;
+   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
 
   if (!email || !password) {
