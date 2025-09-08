@@ -22,7 +22,7 @@ export default function ColoredLetterTitle({ title, className, unitId }: Colored
 
   return (
     <span className={cn(className)}>
-      <span className={cn("font-bold", getColorClass(unitId))}>{firstLetter}</span>{restOfTitle}
+      <span className={cn("font-bold", getColorClass(unitId))}>({firstLetter})</span>{restOfTitle}
     </span>
   );
 }
