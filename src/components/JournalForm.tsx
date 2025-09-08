@@ -37,7 +37,7 @@ type JournalFormValues = z.infer<typeof journalSchema>;
 const allVideos = exerciseData.flatMap(unit =>
   unit.videos.map(video => ({
     value: video.id,
-    label: `${unit.title.split(':')[0]}: ${video.title}`,
+    label: `${unit.title}: ${video.level}. ${video.title}`,
   }))
 );
 

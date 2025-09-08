@@ -1,7 +1,6 @@
 
 'use client';
 
-import { useState } from 'react';
 import { exerciseData } from '@/lib/data';
 import type { Unit, Video } from '@/lib/data';
 import UnitCard from './UnitCard';
@@ -10,14 +9,10 @@ import { Sidebar, SidebarContent, SidebarHeader, SidebarInset, SidebarMenuItem, 
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { useProgress } from '@/hooks/use-progress';
-import StereoVideoPlayer from './StereoVideoPlayer';
-import { Button } from './ui/button';
-import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 
 export default function TrainingPage() {
-  const { completedVideos, markAsComplete, isComplete } = useProgress();
-  const { toast } = useToast();
+  const { completedVideos } = useProgress();
   const router = useRouter();
 
 
@@ -106,5 +101,3 @@ export default function TrainingPage() {
     </SidebarProvider>
   );
 }
-
-    

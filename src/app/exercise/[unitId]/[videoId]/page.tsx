@@ -11,7 +11,6 @@ import { useProgress } from '@/hooks/use-progress';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import AffirmationGenerator from '@/components/AffirmationGenerator';
-import { ColoredGroupTitle } from '@/components/ColoredGroupTitle';
 import { cn } from '@/lib/utils';
 import ExerciseSidebar from '@/components/ExerciseSidebar';
 import { Sidebar, SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
@@ -90,7 +89,7 @@ export default function ExercisePage() {
           <div className="flex flex-col p-4 md:p-8 h-full">
             <header className="mb-6">
               <div className="text-sm font-medium text-accent font-headline">
-                <ColoredGroupTitle title={unit.title} />
+                {unit.title}
               </div>
               <h1 className="text-3xl md:text-4xl font-bold font-headline text-primary">
                 {video.level}. {video.title}
