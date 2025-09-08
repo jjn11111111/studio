@@ -32,29 +32,28 @@ const serviceAccount = parseServiceAccount();
 
 const ADMIN_APP_NAME = 'firebase-admin-app';
 
-// This is the singleton instance of the Firebase Admin App.
-let adminApp: App;
+let adminApp: App | null = null;
 
-// This function initializes and returns the singleton instance.
 function initializeAdminApp(): App {
   if (getApps().some((app) => app.name === ADMIN_APP_NAME)) {
-    return getApp(ADMIN_APP_NAME);
+    adminApp = getApp(ADMIN_APP_NAME);
+    return adminApp;
   }
 
   if (!serviceAccount) {
-    throw new Error('Firebase Admin App initialization failed: Service account credentials are not available or invalid. Check server logs.');
+    throw new Error('Firebase Admin App initialization failed: Service account credentials are not available or invalid. Check server logs for details.');
   }
 
   try {
-    return initializeApp({
+    adminApp = initializeApp({
       credential: cert(serviceAccount),
     }, ADMIN_APP_NAME);
+    return adminApp;
   } catch (error: any) {
     console.error('CRITICAL: Firebase Admin App initialization failed with error:', error.message);
-    throw new Error(`Firebase Admin App initialization failed: ${error.message}`);
+    throw new Error(`Firebase Admin App initialization failed: ${error.message}. Check server logs.`);
   }
 }
-
 
 /**
  * Retrieves the singleton instance of the Firebase Admin App.
@@ -62,8 +61,8 @@ function initializeAdminApp(): App {
  * Throws an error if initialization fails.
  */
 export function getFirebaseAdminApp(): App {
-  if (!adminApp) {
-    adminApp = initializeAdminApp();
-  }
-  return adminApp;
+    if (!adminApp) {
+        return initializeAdminApp();
+    }
+    return adminApp;
 }

@@ -39,19 +39,19 @@ export async function clearSessionCookie() {
 }
 
 export async function signUpWithEmail(formData: FormData) {
-  const { auth, adminDb } = getAdminAuth();
-  if (!auth || !adminDb) {
-    return {error: 'Server configuration error. Please try again later.'};
-  }
-
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
 
   if (!email || !password) {
     return {error: 'Email and password are required.'};
   }
-
+  
   try {
+    const { auth, adminDb } = getAdminAuth();
+    if (!auth || !adminDb) {
+      return {error: 'Server configuration error. Please try again later.'};
+    }
+
     const userRecord = await auth.createUser({
       email,
       password,
@@ -64,10 +64,6 @@ export async function signUpWithEmail(formData: FormData) {
         subscription: { status: 'free' },
     });
 
-    // We can't get an ID token from the admin SDK user record directly.
-    // We need to sign in the user on the client to get it.
-    // This is a bit of a workaround, but it's a common pattern.
-    // For this to work, we have to sign in with the client SDK
     const clientAuth = getClientAuth(clientApp);
     const userCredential = await signInWithEmailAndPassword(clientAuth, email, password);
     const idToken = await userCredential.user.getIdToken();
@@ -79,7 +75,6 @@ export async function signUpWithEmail(formData: FormData) {
         return { error: 'This email address is already in use. Please log in or use a different email.' };
     }
     console.error("Sign up error:", error);
-    // Provide a more generic error for other cases
     return {error: 'An unknown error occurred during sign up. Please try again.'};
   }
 }
