@@ -47,10 +47,6 @@ export default function Header() {
 
             {user ? (
               <>
-                <Button variant="ghost" onClick={signOutUser}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Log Out
-                </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="relative h-10 w-10 rounded-full">
