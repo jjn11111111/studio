@@ -1,3 +1,4 @@
+
 // IMPORTANT: For proprietary videos, the videoUrl properties below should not be public URLs.
 // A secure solution using Firebase Storage and Authentication is recommended to protect your content.
 // The current URLs are placeholders for development.
@@ -23,7 +24,7 @@ export const exerciseData: Unit[] = [
     id: 'module-1',
     title: 'Module 1',
     groupName: 'Red Group',
-    description: 'Begin your journey by gently awakening your senses and preparing your mind for deeper exploration. These exercises focus on basic relaxation and visualization.',
+    description: 'Complete each exercise in ascending order from 1 to 10. Take short 30s - 45s breaks between exercises if needed, but attempt to complete the whole module without stopping.',
     videos: [
       { id: 'vid-1-1', title: 'Avocado', description: 'A guided breathing exercise to calm the nervous system and center your awareness.', thumbnailUrl: 'https://placehold.co/800x450', videoUrl: 'https://firebasestorage.googleapis.com/v0/b/pinealvision.firebasestorage.app/o/Untitled%20design(12).MP4?alt=media' },
       { id: 'vid-1-2', title: 'Banana', description: 'Visualize a gentle light glowing in the center of your forehead.', thumbnailUrl: 'https://placehold.co/800x450', videoUrl: 'https://firebasestorage.googleapis.com/v0/b/pinealvision.firebasestorage.app/o/Untitled%20design(23).MP4?alt=media' },
@@ -41,7 +42,7 @@ export const exerciseData: Unit[] = [
     id: 'module-2',
     title: 'Module 2',
     groupName: 'Yellow Group',
-    description: 'Engage in exercises designed to directly stimulate the pineal gland through specific frequencies and more complex visual patterns.',
+    description: 'Complete each exercise in ascending order from 1 to 10. Take short 30s - 45s breaks between exercises if needed, but attempt to complete the whole module without stopping.',
     videos: [
         { id: 'vid-2-1', title: 'Aardvark', description: 'A deep humming meditation that creates vibrations resonating with the pineal gland.', thumbnailUrl: 'https://placehold.co/800x450', videoUrl: 'https://firebasestorage.googleapis.com/v0/b/pinealvision.firebasestorage.app/o/4DBC6A36-6762-421F-AFD0-A4ACDA4A8DBA.mov?alt=media' },
         { id: 'vid-2-2', title: 'Boa Constrictor', description: 'Focus on a pulsating indigo light to energize and activate.', thumbnailUrl: 'https://placehold.co/800x450', videoUrl: 'https://firebasestorage.googleapis.com/v0/b/pinealvision.firebasestorage.app/o/539DBB90-6C01-45D9-9E87-DDF483F52E6B.MOV?alt=media' },
@@ -59,7 +60,7 @@ export const exerciseData: Unit[] = [
     id: 'module-3',
     title: 'Module 3',
     groupName: 'Blue Group',
-    description: 'Journey beyond the self with advanced techniques that aim to open pathways to higher states of awareness and intuitive insight.',
+    description: 'Complete each exercise in ascending order from 1 to 10. Take short 30s - 45s breaks between exercises if needed, but attempt to complete the whole module without stopping.',
     videos: [
         { id: 'vid-3-1', title: 'Aspen', description: 'An immersive journey through stars and galaxies to expand your sense of self.', thumbnailUrl: 'https://placehold.co/800x450', videoUrl: 'https://firebasestorage.googleapis.com/v0/b/pinealvision.firebasestorage.app/o/Video%206.MP4?alt=media' },
         { id: 'vid-3-2', title: 'Beech', description: 'Use abstract visual cues to help you listen to your inner voice.', thumbnailUrl: 'https://placehold.co/800x450', videoUrl: 'https://firebasestorage.googleapis.com/v0/b/pinealvision.firebasestorage.app/o/Video%2015.MP4?alt=media' },
