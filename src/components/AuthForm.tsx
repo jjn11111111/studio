@@ -170,7 +170,7 @@ export default function AuthForm() {
                     <Input type="password" placeholder="••••••••" {...field} />
                   </FormControl>
                   <FormMessage />
-                </Item>
+                </FormItem>
               )}
             />
             <Button type="submit" className="w-full" disabled={isRegisterSubmitting}>
