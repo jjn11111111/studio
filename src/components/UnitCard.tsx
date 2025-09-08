@@ -6,6 +6,7 @@ import { Button } from './ui/button';
 import { Progress } from './ui/progress';
 import { ArrowRight, Lock, PlayCircle } from 'lucide-react';
 import { Skeleton } from './ui/skeleton';
+import { cn } from '@/lib/utils';
 
 interface UnitCardProps {
   unit: Unit;
