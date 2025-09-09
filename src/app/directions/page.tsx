@@ -1,3 +1,4 @@
+
 import Header from '@/components/Header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { HelpCircle, Target, Eye, View, ArrowRight } from 'lucide-react';
@@ -69,7 +70,7 @@ export default function DirectionsPage() {
                 <CardTitle className="flex items-center gap-2">
                   <View /> 3. Find the Image
                 </CardTitle>
-              </Header>
+              </CardHeader>
               <CardContent>
                 As you look through the screen, you'll notice the patterns start to overlap. A third, 3D image will begin to appear in the middle.
               </CardContent>
@@ -92,7 +93,6 @@ export default function DirectionsPage() {
               <Link href="/training">Start Training <ArrowRight className="ml-2" /></Link>
             </Button>
         </div>
-
       </div>
     </div>
   );
