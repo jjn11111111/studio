@@ -6,6 +6,7 @@ import { PlayCircle } from 'lucide-react';
 export default function DirectionsPage() {
   const sampleVideoUrl1 = 'https://firebasestorage.googleapis.com/v0/b/pinealvision.firebasestorage.app/o/Untitled%20design(12).MP4?alt=media';
   const sampleVideoUrl2 = 'https://firebasestorage.googleapis.com/v0/b/pinealvision.firebasestorage.app/o/1CA0BC15-104E-4F43-90B7-8F96E13FDE44.MOV?alt=media';
+  const sampleVideoUrl3 = 'https://firebasestorage.googleapis.com/v0/b/pinealvision.firebasestorage.app/o/Untitled%20design(10).mp4?alt=media';
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -36,11 +37,21 @@ export default function DirectionsPage() {
               className="w-full h-full object-cover"
             />
           </div>
-          {[...Array(4)].map((_, i) => (
+          <div className="bg-muted border-2 border-dashed border-border rounded-lg aspect-video flex items-center justify-center overflow-hidden">
+            <video
+              src={sampleVideoUrl3}
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-full object-cover"
+            />
+          </div>
+          {[...Array(3)].map((_, i) => (
             <div key={i} className="bg-muted border-2 border-dashed border-border rounded-lg aspect-video flex items-center justify-center">
               <div className="text-center text-muted-foreground">
                 <PlayCircle className="h-12 w-12 mx-auto" />
-                <p>Video Placeholder {i + 3}</p>
+                <p>Video Placeholder {i + 4}</p>
               </div>
             </div>
           ))}
