@@ -28,9 +28,17 @@ export default function UnitCard({ unit, completedVideos, isInitialized, onSelec
     return `unit-${unit.id.split('-')[1]}-theme`;
   };
 
+  // Updated function to map groupName to Tailwind color classes
   const getColorClass = (unit: Unit) => {
-    return `text-unit-${unit.id.split('-')[1]}`;
-  }
+    switch (unit.groupName.toLowerCase()) {
+      case 'red group':
+        return 'text-red-600'; // Primary red color
+      case 'yellow group':
+        return 'text-yellow-600'; // Primary yellow color
+      default:
+        return 'text-foreground'; // Fallback color
+    }
+  };
 
   if (!isInitialized) {
     return (
@@ -51,25 +59,25 @@ export default function UnitCard({ unit, completedVideos, isInitialized, onSelec
 
   return (
     <Card className={cn(
-        "flex flex-col md:flex-row items-center transition-all duration-300 hover:shadow-lg hover:-translate-y-1 overflow-hidden",
-        getThemeClass(unit)
+      "flex flex-col md:flex-row items-center transition-all duration-300 hover:shadow-lg hover:-translate-y-1 overflow-hidden",
+      getThemeClass(unit)
     )}>
       <CardHeader className="w-full md:w-2/3">
-          <h2 className="text-2xl font-semibold leading-none tracking-tight text-foreground">
-            {unit.title}:{' '}
-            <span className={getColorClass(unit)}>{unit.groupName}</span>
-          </h2>
-          <CardDescription className="text-muted-foreground pt-2">{unit.description}</CardDescription>
+        <h2 className="text-2xl font-semibold leading-none tracking-tight text-foreground">
+          {unit.title}:{' '}
+          <span className={getColorClass(unit)}>{unit.groupName}</span>
+        </h2>
+        <CardDescription className="text-muted-foreground pt-2">{unit.description}</CardDescription>
       </CardHeader>
       <CardContent className="w-full md:w-1/3 p-6 flex flex-col items-center justify-center gap-4 bg-muted/50 h-full">
-          <div className="text-sm font-medium text-muted-foreground">
+        <div className="text-sm font-medium text-muted-foreground">
           {completedInUnit} / {totalInUnit} COMPLETED
-          </div>
-          <Progress value={progress} aria-label={`${progress.toFixed(0)}% complete`} />
-          <Button onClick={() => onSelectVideo(firstUncompletedVideo)} disabled={isLocked} className="bg-primary hover:bg-primary/90 text-primary-foreground">
-              {isLocked ? <Lock /> : (progress === 100 ? <ArrowRight/> : <PlayCircle />)}
-              <span className="ml-2">{isLocked ? 'Locked' : (progress < 100 ? 'Start' : 'Review')}</span>
-          </Button>
+        </div>
+        <Progress value={progress} aria-label={`${progress.toFixed(0)}% complete`} />
+        <Button onClick={() => onSelectVideo(firstUncompletedVideo)} disabled={isLocked} className="bg-primary hover:bg-primary/90 text-primary-foreground">
+          {isLocked ? <Lock /> : (progress === 100 ? <ArrowRight /> : <PlayCircle />)}
+          <span className="ml-2">{isLocked ? 'Locked' : (progress < 100 ? 'Start' : 'Review')}</span>
+        </Button>
       </CardContent>
     </Card>
   );
