@@ -3,7 +3,7 @@ import Header from '@/components/Header';
 import Image from 'next/image';
 
 export default function DirectionsPage() {
-  const imageUrl = "https://i.imgur.com/gD6cOqW.png";
+  const imageUrl = "/stereogram-cd-stars.png";
 
   return (
     <div className="flex flex-col min-h-screen">
