@@ -1,4 +1,3 @@
-
 import Header from '@/components/Header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { HelpCircle, Target, Eye, View, ArrowRight } from 'lucide-react';
@@ -35,7 +34,7 @@ export default function DirectionsPage() {
             </p>
           </div>
         </div>
-
+        
         <div className="my-12">
           <div className="flex flex-col items-center gap-8">
               <Image
@@ -61,7 +60,6 @@ export default function DirectionsPage() {
               />
           </div>
         </div>
-
 
         <div className="my-16">
           <h2 className="text-3xl font-bold font-headline text-center mb-8 text-accent">Step-by-Step Guide</h2>

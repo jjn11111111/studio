@@ -1,4 +1,3 @@
-
 'use client';
 
 import { exerciseData } from '@/lib/data';

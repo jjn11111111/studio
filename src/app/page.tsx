@@ -12,7 +12,7 @@ export default function HomePage() {
         <section className="relative text-center py-20 md:py-32 lg:py-40 px-4 overflow-hidden">
           <div className="absolute inset-0 aurora-bg z-0"></div>
           <div className="relative z-10 container mx-auto">
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold font-headline text-primary animate-fade-in-down">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold font-headline text-foreground animate-fade-in-down">
               3rd Eye CrossTraining
             </h1>
             <p className="mt-6 max-w-3xl mx-auto text-lg md:text-xl text-muted-foreground animate-fade-in-up delay-200">
