@@ -55,12 +55,11 @@ export default function UnitCard({ unit, completedVideos, isInitialized, onSelec
         getThemeClass(unit)
     )}>
       <CardHeader className="w-full md:w-2/3">
-          <CardTitle className="font-headline text-2xl">
-            <div className="text-foreground">
-                {unit.title}:{' '}
-                <span className={getColorClass(unit)}>{unit.groupName}</span>
-            </div>
-          </CardTitle>
+          {/* Using a standard h2 for more granular control over styling */}
+          <h2 className="font-headline text-2xl font-semibold leading-none tracking-tight text-foreground">
+            {unit.title}:{' '}
+            <span className={getColorClass(unit)}>{unit.groupName}</span>
+          </h2>
           <CardDescription>{unit.description}</CardDescription>
       </CardHeader>
       <CardContent className="w-full md:w-1/3 p-6 flex flex-col items-center justify-center gap-4 bg-muted/50 h-full">
