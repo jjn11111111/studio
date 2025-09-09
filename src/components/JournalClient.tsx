@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
 import { PlusCircle, Loader2 } from 'lucide-react';
 import JournalForm from './JournalForm';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
@@ -30,7 +31,7 @@ export default function JournalClient() {
     }
   }, [user]);
 
-  const handleSaveEntry = async (formData: { videoId: string; notes: string; intensity: number; tags: string[] }) => {
+  const handleSaveEntry = async (formData: { videoId: string; notes: string; intensity: number; usefulness: number; tags: string[] }) => {
     if (!user) return;
     
     const allVideos = exerciseData.flatMap(unit => unit.videos);
@@ -74,36 +75,59 @@ export default function JournalClient() {
         </Dialog>
       </div>
 
-      <div className="space-y-6">
-        {isLoading ? (
-            <div className="flex justify-center items-center py-12">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            </div>
-        ) : entries.length === 0 ? (
-          <p className="text-muted-foreground text-center py-12">You have no journal entries yet. Click "New Entry" to add one!</p>
-        ) : (
-          entries.map(entry => (
-            <Card key={entry.id}>
-              <CardHeader>
-                <CardTitle>{entry.videoTitle}</CardTitle>
-                <CardDescription>
-                  {new Date(entry.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })} - Intensity: {entry.intensity}/10
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="mb-4">{entry.notes}</p>
-                {entry.tags && entry.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {entry.tags.map(tag => (
-                      <span key={tag} className="px-2 py-1 bg-accent text-accent-foreground text-xs rounded-full">{tag}</span>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          ))
-        )}
-      </div>
+      <Card>
+        <CardContent className="p-0">
+           <div className="overflow-x-auto">
+            <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[250px]">Module & Exercise</TableHead>
+                    <TableHead>Observations</TableHead>
+                    <TableHead className="text-center w-[120px]">Usefulness (1-5)</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {isLoading ? (
+                      <TableRow>
+                        <TableCell colSpan={3} className="h-24 text-center">
+                           <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
+                        </TableCell>
+                      </TableRow>
+                  ) : entries.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={3} className="h-24 text-center">
+                        You have no journal entries yet. Click "New Entry" to add one!
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    entries.map(entry => (
+                      <TableRow key={entry.id}>
+                        <TableCell>
+                          <div className="font-medium">{entry.videoTitle}</div>
+                          <div className="text-sm text-muted-foreground">{entry.module}</div>
+                           <div className="text-xs text-muted-foreground mt-1">
+                            {new Date(entry.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                           </div>
+                        </TableCell>
+                        <TableCell>
+                          <p className="mb-2">{entry.notes}</p>
+                           {entry.tags && entry.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-1">
+                              {entry.tags.map(tag => (
+                                <span key={tag} className="px-2 py-0.5 bg-muted text-muted-foreground text-xs rounded-full">{tag}</span>
+                              ))}
+                            </div>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-center font-medium">{entry.usefulness}</TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+           </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

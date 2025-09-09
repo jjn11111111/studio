@@ -1,4 +1,3 @@
-
 'use client';
 import {
   collection,
@@ -8,11 +7,9 @@ import {
   where,
   orderBy,
   Timestamp,
-  doc,
-  getDoc,
-  DocumentReference,
 } from 'firebase/firestore';
 import { db as getDb } from './firebase';
+import { exerciseData } from './data';
 
 export interface JournalEntry {
   id: string;
@@ -21,8 +18,10 @@ export interface JournalEntry {
   videoTitle: string;
   notes: string;
   intensity: number;
+  usefulness: number; // 1 (good) to 5 (poor)
   tags: string[];
   date: string;
+  module: string;
 }
 
 export interface JournalEntryData {
@@ -31,6 +30,7 @@ export interface JournalEntryData {
   videoTitle: string;
   notes: string;
   intensity: number;
+  usefulness: number;
   tags: string[];
   date: string;
 }
@@ -42,9 +42,14 @@ export async function addJournalEntry(entryData: JournalEntryData): Promise<Jour
     ...entryData,
     createdAt: Timestamp.now(),
   });
+
+  const allVideos = exerciseData.flatMap(unit => unit.videos.map(v => ({...v, module: unit.title})));
+  const video = allVideos.find(v => v.id === entryData.videoId);
+
   return {
       id: docRef.id,
-      ...entryData
+      ...entryData,
+      module: video?.module ?? 'Unknown Module'
   };
 }
 
@@ -58,9 +63,12 @@ export async function getJournalEntries(userId: string): Promise<JournalEntry[]>
     orderBy('createdAt', 'desc')
   );
 
+  const allVideos = exerciseData.flatMap(unit => unit.videos.map(v => ({...v, module: unit.title})));
+
   const querySnapshot = await getDocs(q);
   querySnapshot.forEach((doc) => {
     const data = doc.data();
+    const video = allVideos.find(v => v.id === data.videoId);
     entries.push({
       id: doc.id,
       userId: data.userId,
@@ -68,8 +76,10 @@ export async function getJournalEntries(userId: string): Promise<JournalEntry[]>
       videoTitle: data.videoTitle,
       notes: data.notes,
       intensity: data.intensity,
+      usefulness: data.usefulness ?? 3, // Default to neutral if not present
       tags: data.tags || [],
       date: data.date,
+      module: video?.module ?? 'Unknown Module'
     });
   });
 

@@ -29,6 +29,7 @@ const journalSchema = z.object({
   videoId: z.string().min(1, { message: 'Please select an exercise.' }),
   notes: z.string().min(10, { message: 'Please enter a description of at least 10 characters.' }),
   intensity: z.number().min(1).max(10),
+  usefulness: z.number().min(1).max(5),
   tags: z.array(z.string()).optional(),
 });
 
@@ -37,7 +38,7 @@ type JournalFormValues = z.infer<typeof journalSchema>;
 const allVideos = exerciseData.flatMap(unit =>
   unit.videos.map(video => ({
     value: video.id,
-    label: `${unit.title}: ${video.level}. ${video.title}`,
+    label: `${unit.title}: ${video.title}`,
   }))
 );
 
@@ -63,6 +64,7 @@ export default function JournalForm({ onSave, onCancel }: JournalFormProps) {
       videoId: '',
       notes: '',
       intensity: 5,
+      usefulness: 3,
       tags: [],
     },
   });
@@ -112,7 +114,7 @@ export default function JournalForm({ onSave, onCancel }: JournalFormProps) {
           name="notes"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Experience Description</FormLabel>
+              <FormLabel>Observations</FormLabel>
               <FormControl>
                 <Textarea
                   placeholder="Describe your physical, emotional, and visual sensations..."
@@ -125,24 +127,46 @@ export default function JournalForm({ onSave, onCancel }: JournalFormProps) {
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="intensity"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Intensity Rating: {form.watch('intensity')}</FormLabel>
-              <FormControl>
-                <Slider
-                  min={1}
-                  max={10}
-                  step={1}
-                  defaultValue={[field.value]}
-                  onValueChange={(value) => field.onChange(value[0])}
-                />
-              </FormControl>
-            </FormItem>
-          )}
-        />
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="intensity"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Intensity: {form.watch('intensity')}/10</FormLabel>
+                <FormControl>
+                  <Slider
+                    min={1}
+                    max={10}
+                    step={1}
+                    defaultValue={[field.value]}
+                    onValueChange={(value) => field.onChange(value[0])}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="usefulness"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Usefulness: {form.watch('usefulness')}/5</FormLabel>
+                 <FormDescription className="text-xs">(1=Good, 5=Poor)</FormDescription>
+                <FormControl>
+                  <Slider
+                    min={1}
+                    max={5}
+                    step={1}
+                    defaultValue={[field.value]}
+                    onValueChange={(value) => field.onChange(value[0])}
+                  />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+        </div>
         
         <FormItem>
             <FormLabel>Tags</FormLabel>
