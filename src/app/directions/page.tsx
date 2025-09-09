@@ -1,3 +1,4 @@
+
 import Header from '@/components/Header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { HelpCircle, Target, Eye, View, ArrowRight } from 'lucide-react';
@@ -36,27 +37,36 @@ export default function DirectionsPage() {
         </div>
         
         <div className="my-12 space-y-8 flex flex-col items-center">
-          <Image
-              src="/stereogram-balloons.png"
-              alt="Practice Stereogram 1"
-              width={800}
-              height={450}
-              className="rounded-lg shadow-lg"
-            />
-          <Image
-              src="/stereogram-cd-stars.png"
-              alt="Practice Stereogram 2"
-              width={800}
-              height={450}
-              className="rounded-lg shadow-lg"
-            />
-          <Image
-              src="/stereogram-astronaut.png"
-              alt="Practice Stereogram 3"
-              width={800}
-              height={450}
-              className="rounded-lg shadow-lg"
-            />
+            <div className="text-center space-y-4">
+              <h3 className="text-xl font-bold bg-black text-white inline-block px-3 py-1 rounded-md">Practice Example 1</h3>
+              <Image
+                  src="/stereogram-balloons.png"
+                  alt="Practice Stereogram 1"
+                  width={800}
+                  height={450}
+                  className="rounded-lg shadow-lg"
+                />
+            </div>
+            <div className="text-center space-y-4">
+               <h3 className="text-xl font-bold bg-black text-white inline-block px-3 py-1 rounded-md">Practice Example 2</h3>
+              <Image
+                  src="/stereogram-cd-stars.png"
+                  alt="Practice Stereogram 2"
+                  width={800}
+                  height={450}
+                  className="rounded-lg shadow-lg"
+                />
+            </div>
+            <div className="text-center space-y-4">
+              <h3 className="text-xl font-bold bg-black text-white inline-block px-3 py-1 rounded-md">Practice Example 3</h3>
+              <Image
+                  src="/stereogram-astronaut.png"
+                  alt="Practice Stereogram 3"
+                  width={800}
+                  height={450}
+                  className="rounded-lg shadow-lg"
+                />
+            </div>
         </div>
 
         <div className="my-16">
