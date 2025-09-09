@@ -96,7 +96,7 @@ export default function StereoVideoPlayer({ thumbnailUrl, videoUrl }: StereoVide
   return (
     <div 
       ref={containerRef}
-      className="absolute inset-0 w-full h-full overflow-hidden cursor-pointer bg-black"
+      className="absolute inset-0 w-full h-full overflow-hidden bg-black"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onClick={handlePlayPause}
@@ -116,7 +116,7 @@ export default function StereoVideoPlayer({ thumbnailUrl, videoUrl }: StereoVide
         data-ai-hint="abstract space"
       />
       <div className={cn(
-          "absolute inset-0 flex items-center justify-center bg-black/40 transition-opacity z-10",
+          "absolute inset-0 flex items-center justify-center transition-opacity z-10",
           (isHovered || !isPlaying || hasEnded) ? 'opacity-100' : 'opacity-0'
         )}>
         {hasEnded ? (
