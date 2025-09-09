@@ -23,6 +23,21 @@ export default function DirectionsPage() {
       alt: "Practice Stereogram 3: Astronaut",
       credit: "Generated Stereogram",
     },
+    {
+      url: "/stereogram-balloons.png",
+      alt: "Practice Stereogram 4: Balloons",
+      credit: "Generated Stereogram",
+    },
+    {
+      url: "/stereogram-cd-stars.png",
+      alt: "Practice Stereogram 5: CDs and Stars",
+      credit: "Generated Stereogram",
+    },
+    {
+      url: "/stereogram-astronaut.png",
+      alt: "Practice Stereogram 6: Astronaut",
+      credit: "Generated Stereogram",
+    },
   ];
 
   return (
