@@ -37,9 +37,9 @@ export default function DirectionsPage() {
         </div>
 
         <div className="my-16 grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Image src="https://i.imgur.com/gJ5ZIZs.jpeg" alt="Stereogram of a skull" className="rounded-lg shadow-lg" width={600} height={400} data-ai-hint="stereogram skull" />
-            <Image src="https://i.imgur.com/Bv2Jq3J.jpeg" alt="Stereogram of a cat" className="rounded-lg shadow-lg" width={600} height={400} data-ai-hint="stereogram cat" />
-            <Image src="https://i.imgur.com/j4r8g3A.jpeg" alt="Stereogram of a building" className="rounded-lg shadow-lg" width={600} height={400} data-ai-hint="stereogram building" />
+            <Image src="https://www.londonstereo.com/media/images/lsc_blog_images/LSC_Blog_Stereoscopy-for-Beginners_Brian_May_Queen_London_Stereoscopic_Company_2_large.jpg" alt="Stereogram of Brian May" className="rounded-lg shadow-lg" width={600} height={400} data-ai-hint="stereogram person" />
+            <Image src="https://www.londonstereo.com/media/images/lsc_blog_images/LSC_Blog_Stereoscopy-for-Beginners_Brian_May_Queen_London_Stereoscopic_Company_3_large.jpg" alt="Stereogram of a garden" className="rounded-lg shadow-lg" width={600} height={400} data-ai-hint="stereogram garden" />
+            <Image src="https://www.londonstereo.com/media/images/lsc_blog_images/LSC_Blog_Stereoscopy-for-Beginners_Brian_May_Queen_London_Stereoscopic_Company_5_large.jpg" alt="Stereogram of a museum display" className="rounded-lg shadow-lg" width={600} height={400} data-ai-hint="stereogram museum" />
         </div>
 
         <div className="my-16">
