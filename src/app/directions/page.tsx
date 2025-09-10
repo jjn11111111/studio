@@ -1,4 +1,3 @@
-
 'use client';
 import Header from '@/components/Header';
 import { PlayCircle } from 'lucide-react';
@@ -6,6 +5,7 @@ import { PlayCircle } from 'lucide-react';
 export default function DirectionsPage() {
   const correctVideoUrl = 'https://firebasestorage.googleapis.com/v0/b/pinealvision.firebasestorage.app/o/Untitled%20design(10).mp4?alt=media';
   const secondVideoUrl = 'https://firebasestorage.googleapis.com/v0/b/pinealvision.firebasestorage.app/o/Untitled%20design(13).mp4?alt=media';
+  const thirdVideoUrl = 'https://firebasestorage.googleapis.com/v0/b/pinealvision.firebasestorage.app/o/Untitled%20design(9).mp4?alt=media';
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -39,10 +39,22 @@ export default function DirectionsPage() {
               className="w-full h-full object-cover"
             />
           </div>
+          
+          {/* Video 3 */}
+          <div className="bg-muted border-2 border-dashed border-border rounded-lg aspect-video flex items-center justify-center overflow-hidden">
+            <video
+              src={thirdVideoUrl}
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-full object-cover"
+            />
+          </div>
 
 
-          {/* 4 Empty Placeholders */}
-          {[...Array(4)].map((_, i) => (
+          {/* 3 Empty Placeholders */}
+          {[...Array(3)].map((_, i) => (
             <div key={i} className="bg-muted border-2 border-dashed border-border rounded-lg aspect-video flex items-center justify-center">
               <div className="text-center text-muted-foreground">
                 <PlayCircle className="h-12 w-12 mx-auto" />
