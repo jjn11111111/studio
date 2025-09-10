@@ -55,16 +55,6 @@ export default function DirectionsPage() {
               />
             </div>
           ))}
-
-          {/* Empty Placeholders */}
-          {[...Array(1)].map((_, i) => (
-            <div key={i} className="w-full bg-muted border-2 border-dashed border-border rounded-lg aspect-video flex items-center justify-center">
-              <div className="text-center text-muted-foreground">
-                <PlayCircle className="h-12 w-12 mx-auto" />
-                <p>Video Placeholder</p>
-              </div>
-            </div>
-          ))}
         </div>
 
         <div className="max-w-4xl mx-auto space-y-6 text-lg text-muted-foreground mt-12">
