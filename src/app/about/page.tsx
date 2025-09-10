@@ -29,7 +29,14 @@ export default function AboutPage() {
             </p>
           </div>
           <div>
-            <Image src="https://picsum.photos/600/400" alt="Abstract representation of brain activity" className="rounded-lg shadow-lg" data-ai-hint="abstract brain" width={600} height={400} />
+            <video
+                src="https://firebasestorage.googleapis.com/v0/b/pinealvision.firebasestorage.app/o/Untitled%20design(16).mp4?alt=media"
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="rounded-lg shadow-lg"
+              />
           </div>
         </div>
 
