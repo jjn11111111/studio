@@ -64,6 +64,12 @@ export default function DirectionsPage() {
             </div>
           ))}
         </div>
+
+        <div className="max-w-4xl mx-auto space-y-6 text-lg text-muted-foreground mt-12">
+            <p>
+                All exercises created for this app require users to maintain stereoscopic viewing for the duration of each exercise. This is a key component, and while some level of 3rd eye stimulation may occur with standard vision, optimal results will most likely not occur.
+            </p>
+        </div>
       </main>
     </div>
   );
