@@ -6,6 +6,7 @@ export default function DirectionsPage() {
   const correctVideoUrl = 'https://firebasestorage.googleapis.com/v0/b/pinealvision.firebasestorage.app/o/Untitled%20design(10).mp4?alt=media';
   const secondVideoUrl = 'https://firebasestorage.googleapis.com/v0/b/pinealvision.firebasestorage.app/o/Untitled%20design(13).mp4?alt=media';
   const thirdVideoUrl = 'https://firebasestorage.googleapis.com/v0/b/pinealvision.firebasestorage.app/o/Untitled%20design(9).mp4?alt=media';
+  const fourthVideoUrl = 'https://firebasestorage.googleapis.com/v0/b/pinealvision.firebasestorage.app/o/Untitled%20design(11).mp4?alt=media';
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -52,9 +53,21 @@ export default function DirectionsPage() {
             />
           </div>
 
+          {/* Video 4 */}
+          <div className="bg-muted border-2 border-dashed border-border rounded-lg aspect-video flex items-center justify-center overflow-hidden">
+            <video
+              src={fourthVideoUrl}
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-full object-cover"
+            />
+          </div>
 
-          {/* 3 Empty Placeholders */}
-          {[...Array(3)].map((_, i) => (
+
+          {/* 2 Empty Placeholders */}
+          {[...Array(2)].map((_, i) => (
             <div key={i} className="bg-muted border-2 border-dashed border-border rounded-lg aspect-video flex items-center justify-center">
               <div className="text-center text-muted-foreground">
                 <PlayCircle className="h-12 w-12 mx-auto" />
