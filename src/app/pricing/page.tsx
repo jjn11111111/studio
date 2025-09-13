@@ -1,9 +1,8 @@
 
 import Header from '@/components/Header';
-import { Button } from '@/components/ui/button';
+import CheckoutButton from '@/components/CheckoutButton';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Check } from 'lucide-react';
-import Link from 'next/link';
 
 export default function PricingPage() {
   return (
@@ -48,10 +47,7 @@ export default function PricingPage() {
               </ul>
             </CardContent>
             <CardFooter>
-                {/* This will trigger the checkout flow */}
-                <Button className="w-full" size="lg">
-                    Upgrade to Active
-                </Button>
+              <CheckoutButton />
             </CardFooter>
           </Card>
         </div>

@@ -10,6 +10,7 @@ import {clearSessionCookie} from '@/app/auth/actions';
 
 interface AuthContextType {
   user: User | null;
+  idToken: string | null;
   isLoading: boolean;
   signOutUser: () => Promise<void>;
 }
@@ -18,6 +19,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({children}: {children: ReactNode}) {
   const [user, setUser] = useState<User | null>(null);
+  const [idToken, setIdToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const auth = getAuth(app);
   const router = useRouter();
@@ -25,6 +27,12 @@ export function AuthProvider({children}: {children: ReactNode}) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
+      if (user) {
+        const token = await user.getIdToken();
+        setIdToken(token);
+      } else {
+        setIdToken(null);
+      }
       setIsLoading(false);
     });
     return () => unsubscribe();
@@ -44,6 +52,7 @@ export function AuthProvider({children}: {children: ReactNode}) {
 
   const value = {
     user,
+    idToken,
     isLoading,
     signOutUser,
   };

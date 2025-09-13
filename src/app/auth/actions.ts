@@ -9,6 +9,7 @@ import {getAuth as getClientAuth} from 'firebase/auth';
 import {app as clientApp} from '@/lib/firebase';
 import {getFirestore as getAdminFirestore} from 'firebase-admin/firestore';
 import type { App } from 'firebase-admin/app';
+import Stripe from 'stripe';
 
 function getAdminAuth() {
   let app: App;
@@ -70,10 +71,22 @@ export async function signUpWithEmail(formData: FormData) {
       password,
     });
     
+    // Create a customer in Stripe
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+      apiVersion: '2024-04-10',
+    });
+    const customer = await stripe.customers.create({
+      email: userRecord.email,
+      metadata: {
+        firebaseUID: userRecord.uid,
+      },
+    });
+
     await adminDb.collection('users').doc(userRecord.uid).set({
         email: userRecord.email,
         createdAt: new Date(),
         subscription: { status: 'free' },
+        stripeCustomerId: customer.id,
     });
 
     // Sign in the user on the client to get an ID token, then create the session cookie.
