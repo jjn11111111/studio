@@ -11,7 +11,8 @@ export default function HomePage() {
       <main className="flex-grow">
         <section className="relative text-center py-20 md:py-32 lg:py-40 px-4 overflow-hidden">
           <div className="absolute inset-0 aurora-bg z-0"></div>
-          <div className="relative z-10 container mx-auto">
+          <div className="relative z-10 container mx-auto flex flex-col items-center">
+            <Logo className="w-48 h-48 mb-8 text-foreground animate-fade-in" />
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold font-headline text-foreground animate-fade-in-down">
               3rd Eye CrossTraining
             </h1>
