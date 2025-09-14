@@ -2,17 +2,24 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
 import { Button } from './ui/button';
-import { Card, CardContent } from './ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
-import { PlusCircle, Loader2, Globe, Lock, ArrowRight } from 'lucide-react';
+import { PlusCircle, Loader2, Globe, Lock, Send } from 'lucide-react';
 import JournalForm from './JournalForm';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
 import { useAuth } from '@/hooks/use-auth';
-import { addJournalEntry, getJournalEntries, getPublicJournalEntries, JournalEntry } from '@/lib/firestore';
+import { addJournalEntry, getJournalEntries, getPublicJournalEntries, JournalEntry, CommunityPost, addCommunityPost, getCommunityPosts } from '@/lib/firestore';
 import { exerciseData } from '@/lib/data';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import Link from 'next/link';
+import { Textarea } from './ui/textarea';
+import { Form, FormControl, FormField, FormItem, FormMessage } from './ui/form';
+import { Avatar, AvatarFallback } from './ui/avatar';
+
 
 function JournalTable({ entries, isLoading, noEntriesText }: { entries: JournalEntry[], isLoading: boolean, noEntriesText: string }) {
   const getAuthorDisplayName = (entry: JournalEntry) => {
@@ -78,6 +85,138 @@ function JournalTable({ entries, isLoading, noEntriesText }: { entries: JournalE
   );
 }
 
+const postSchema = z.object({
+  content: z.string().min(1, { message: 'Comment cannot be empty.' }).max(500, { message: 'Comment must be 500 characters or less.' }),
+});
+type PostFormValues = z.infer<typeof postSchema>;
+
+const getInitials = (email: string | undefined | null) => {
+    if (!email) return 'AN';
+    return email.substring(0, 2).toUpperCase();
+};
+
+const getPostAuthorDisplayName = (post: CommunityPost) => {
+    if (post.authorEmail) {
+      return post.authorEmail.split('@')[0];
+    }
+    return 'Anonymous';
+};
+
+function CommunityChat() {
+  const { user } = useAuth();
+  const [posts, setPosts] = useState<CommunityPost[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const form = useForm<PostFormValues>({
+    resolver: zodResolver(postSchema),
+    defaultValues: { content: '' },
+  });
+
+  const fetchPosts = async () => {
+    setIsLoading(true);
+    const fetchedPosts = await getCommunityPosts();
+    setPosts(fetchedPosts);
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  const onSubmit = async (data: PostFormValues) => {
+    if (!user) return;
+    setIsSubmitting(true);
+
+    try {
+      const newPostData = {
+        userId: user.uid,
+        content: data.content,
+        createdAt: new Date().toISOString(),
+        authorEmail: user.email ?? undefined,
+      };
+      const newPost = await addCommunityPost(newPostData);
+      setPosts(prev => [newPost, ...prev]);
+      form.reset();
+    } catch (error) {
+      console.error("Failed to submit post:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  
+  return (
+    <div className="space-y-6">
+      {user && (
+        <Card>
+            <CardHeader>
+                <CardTitle>Post a Comment</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <Form {...form}>
+                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                    <FormField
+                        control={form.control}
+                        name="content"
+                        render={({ field }) => (
+                        <FormItem>
+                            <FormControl>
+                            <Textarea
+                                placeholder="Share your thoughts, questions, and experiences..."
+                                {...field}
+                            />
+                            </FormControl>
+                            <FormMessage />
+                        </FormItem>
+                        )}
+                    />
+                    <Button type="submit" disabled={isSubmitting}>
+                        {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+                        Post
+                    </Button>
+                    </form>
+                </Form>
+            </CardContent>
+        </Card>
+      )}
+      {!user && (
+          <div className="text-center p-8 border rounded-lg bg-muted">
+            <p>Please log in to post comments and join the discussion.</p>
+          </div>
+      )}
+
+      <div className="space-y-6">
+        {isLoading ? (
+            <div className="flex justify-center items-center py-10">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+        ) : posts.length === 0 ? (
+          <p className="text-center text-muted-foreground py-10">No comments yet. Be the first to post!</p>
+        ) : (
+          posts.map(post => (
+            <Card key={post.id}>
+              <CardContent className="p-4 flex gap-4">
+                 <Avatar>
+                    <AvatarFallback>{getInitials(post.authorEmail)}</AvatarFallback>
+                </Avatar>
+                <div className="flex-1">
+                    <div className="flex items-center justify-between mb-2">
+                        <p className="font-semibold text-sm">{getPostAuthorDisplayName(post)}</p>
+                        <p className="text-xs text-muted-foreground">
+                            {new Date(post.createdAt).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+                        </p>
+                    </div>
+                    <p className="text-sm">{post.content}</p>
+                </div>
+              </CardContent>
+            </Card>
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
+
 
 export default function JournalClient() {
   const { user } = useAuth();
@@ -86,6 +225,8 @@ export default function JournalClient() {
   const [isLoadingMine, setIsLoadingMine] = useState(true);
   const [isLoadingPublic, setIsLoadingPublic] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("my-entries");
+
 
   useEffect(() => {
     if (user) {
@@ -142,13 +283,13 @@ export default function JournalClient() {
   return (
     <div>
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold font-headline text-foreground">Journal</h1>
-        {user && (
+        <h1 className="text-3xl font-bold font-headline text-foreground">Community Journal</h1>
+        {user && activeTab !== 'community-chat' && (
           <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
             <DialogTrigger asChild>
               <Button>
                 <PlusCircle className="mr-2" />
-                New Entry
+                New Journal Entry
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[600px]">
@@ -161,10 +302,11 @@ export default function JournalClient() {
         )}
       </div>
 
-       <Tabs defaultValue="my-entries" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 mb-4">
+       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-3 mb-4">
           <TabsTrigger value="my-entries">My Entries</TabsTrigger>
-          <TabsTrigger value="public-feed">Public Feed</TabsTrigger>
+          <TabsTrigger value="public-journal">Public Journal</TabsTrigger>
+          <TabsTrigger value="community-chat">Community Chat</TabsTrigger>
         </TabsList>
         <TabsContent value="my-entries">
            <JournalTable 
@@ -173,12 +315,15 @@ export default function JournalClient() {
               noEntriesText={!user ? "Please log in to view and create journal entries." : 'You have no journal entries yet. Click "New Entry" to add one!'}
             />
         </TabsContent>
-        <TabsContent value="public-feed">
+        <TabsContent value="public-journal">
           <JournalTable 
             entries={publicEntries} 
             isLoading={isLoadingPublic}
             noEntriesText="No public journal entries yet. Be the first to share your experience!"
           />
+        </TabsContent>
+         <TabsContent value="community-chat">
+          <CommunityChat />
         </TabsContent>
       </Tabs>
       
@@ -210,5 +355,3 @@ export default function JournalClient() {
     </div>
   );
 }
-
-    

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { LogOut, User, BookOpen, MessageSquare } from 'lucide-react';
@@ -45,10 +46,7 @@ export default function Header() {
               <Link href="/pricing">Pricing</Link>
             </Button>
             <Button asChild variant="ghost">
-              <Link href="/journal">Journal</Link>
-            </Button>
-             <Button asChild variant="ghost">
-              <Link href="/community">Community</Link>
+              <Link href="/journal">Community Journal</Link>
             </Button>
 
             {user ? (
@@ -80,13 +78,7 @@ export default function Header() {
                      <DropdownMenuItem asChild>
                       <Link href="/journal">
                         <BookOpen className="mr-2 h-4 w-4" />
-                        <span>Journal</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/community">
-                        <MessageSquare className="mr-2 h-4 w-4" />
-                        <span>Community</span>
+                        <span>Community Journal</span>
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={signOutUser}>
