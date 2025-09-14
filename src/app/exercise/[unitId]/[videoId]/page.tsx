@@ -87,7 +87,7 @@ export default function ExercisePage() {
                         <Button asChild variant="outline" className="bg-black/50 hover:bg-black/70 border-white/20 text-white">
                             <Link href="/training">
                             <List className="mr-2 h-4 w-4" />
-                            Back to Training List
+                            Back to Training module
                             </Link>
                         </Button>
                         <div className="text-right text-white bg-black/50 p-3 rounded-lg">
