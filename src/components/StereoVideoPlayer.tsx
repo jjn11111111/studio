@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Play, Pause, RefreshCw, Expand, Shrink } from 'lucide-react';
+import { RefreshCw, Expand, Shrink } from 'lucide-react';
 import { Button } from './ui/button';
 import { cn } from '@/lib/utils';
 
@@ -35,21 +35,6 @@ export default function StereoVideoPlayer({ thumbnailUrl, videoUrl }: StereoVide
     }
   };
 
-  const handleReplay = (e: React.MouseEvent) => {
-    e.stopPropagation(); 
-    const video = videoRef.current;
-    if (video) {
-        setHasEnded(false);
-        video.currentTime = 0;
-        video.play().catch(console.error);
-    }
-  }
-
-  const togglePlayButton = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    handlePlayPause();
-  };
-  
   const onVideoEnded = () => {
       setIsPlaying(false);
       setHasEnded(true);
@@ -114,34 +99,7 @@ export default function StereoVideoPlayer({ thumbnailUrl, videoUrl }: StereoVide
         onEnded={onVideoEnded}
         data-ai-hint="abstract space"
       />
-      <div className={cn(
-          "absolute inset-0 flex items-center justify-center transition-opacity z-10",
-          (isHovered || !isPlaying || hasEnded) ? 'opacity-100' : 'opacity-0'
-        )}>
-        {hasEnded ? (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleReplay}
-              className="h-20 w-20 text-white hover:bg-white/20 hover:text-white rounded-full backdrop-blur-sm flex flex-col items-center pointer-events-auto"
-              aria-label="Replay video"
-            >
-              <RefreshCw className="h-10 w-10" />
-              <span className="text-xs mt-1">Replay</span>
-            </Button>
-        ) : (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={togglePlayButton}
-              className="h-20 w-20 text-white hover:bg-white/20 hover:text-white rounded-full backdrop-blur-sm pointer-events-auto"
-              aria-label={isPlaying ? 'Pause video' : 'Play video'}
-            >
-              {isPlaying ? <Pause className="h-12 w-12" /> : <Play className="h-12 w-12 ml-2" />}
-            </Button>
-        )}
-      </div>
-
+      
        <div className={cn(
             "absolute bottom-4 right-4 z-10 transition-opacity",
             (isHovered || !isPlaying || hasEnded) ? 'opacity-100' : 'opacity-0'
