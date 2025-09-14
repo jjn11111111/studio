@@ -3,36 +3,114 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from './ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { Card, CardContent } from './ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from './ui/table';
-import { PlusCircle, Loader2 } from 'lucide-react';
+import { PlusCircle, Loader2, Globe, Lock } from 'lucide-react';
 import JournalForm from './JournalForm';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
 import { useAuth } from '@/hooks/use-auth';
-import { addJournalEntry, getJournalEntries, JournalEntry } from '@/lib/firestore';
+import { addJournalEntry, getJournalEntries, getPublicJournalEntries, JournalEntry } from '@/lib/firestore';
 import { exerciseData } from '@/lib/data';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+
+function JournalTable({ entries, isLoading, noEntriesText }: { entries: JournalEntry[], isLoading: boolean, noEntriesText: string }) {
+  const getAuthorDisplayName = (entry: JournalEntry) => {
+    if (entry.authorEmail) {
+      return entry.authorEmail.split('@')[0];
+    }
+    return 'Anonymous';
+  };
+
+  return (
+    <Card>
+      <CardContent className="p-0">
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[250px]">Module & Exercise</TableHead>
+                <TableHead>Observations</TableHead>
+                <TableHead>Author</TableHead>
+                <TableHead className="text-right w-[180px]">Date</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={4} className="h-24 text-center">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
+                  </TableCell>
+                </TableRow>
+              ) : entries.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={4} className="h-24 text-center">
+                    {noEntriesText}
+                  </TableCell>
+                </TableRow>
+              ) : (
+                entries.map(entry => (
+                  <TableRow key={entry.id}>
+                    <TableCell>
+                      <div className="font-medium flex items-center gap-2">
+                        {entry.isPublic ? <Globe className="h-4 w-4 text-blue-500" title="Public"/> : <Lock className="h-4 w-4 text-muted-foreground" title="Private"/>}
+                        {entry.videoTitle}
+                      </div>
+                      <div className="text-sm text-muted-foreground ml-6">{entry.module}</div>
+                    </TableCell>
+                    <TableCell>
+                      <p>{entry.notes}</p>
+                    </TableCell>
+                    <TableCell>
+                      <p className="text-muted-foreground">{getAuthorDisplayName(entry)}</p>
+                    </TableCell>
+                    <TableCell className="text-right text-muted-foreground">
+                      {new Date(entry.date).toLocaleString('en-US', { month: 'long', day: 'numeric' })}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 
 export default function JournalClient() {
   const { user } = useAuth();
-  const [entries, setEntries] = useState<JournalEntry[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [myEntries, setMyEntries] = useState<JournalEntry[]>([]);
+  const [publicEntries, setPublicEntries] = useState<JournalEntry[]>([]);
+  const [isLoadingMine, setIsLoadingMine] = useState(true);
+  const [isLoadingPublic, setIsLoadingPublic] = useState(true);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   useEffect(() => {
     if (user) {
       const fetchEntries = async () => {
-        setIsLoading(true);
+        setIsLoadingMine(true);
         const userEntries = await getJournalEntries(user.uid);
-        setEntries(userEntries);
-        setIsLoading(false);
+        setMyEntries(userEntries);
+        setIsLoadingMine(false);
       };
       fetchEntries();
     } else {
-      setIsLoading(false);
+      setIsLoadingMine(false);
     }
   }, [user]);
 
-  const handleSaveEntry = async (formData: { videoId: string; notes: string; }) => {
+  useEffect(() => {
+    const fetchPublicEntries = async () => {
+      setIsLoadingPublic(true);
+      const entries = await getPublicJournalEntries();
+      setPublicEntries(entries);
+      setIsLoadingPublic(false);
+    };
+    fetchPublicEntries();
+  }, []);
+
+  const handleSaveEntry = async (formData: { videoId: string; notes: string; isPublic: boolean; }) => {
     if (!user) return;
     
     const allVideos = exerciseData.flatMap(unit => unit.videos);
@@ -45,11 +123,15 @@ export default function JournalClient() {
       userId: user.uid,
       videoTitle: video.title,
       date: new Date().toISOString(),
+      authorEmail: user.email ?? undefined,
     };
 
     try {
       const newEntry = await addJournalEntry(newEntryData);
-      setEntries(prev => [newEntry, ...prev].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+      setMyEntries(prev => [newEntry, ...prev].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+      if (newEntry.isPublic) {
+        setPublicEntries(prev => [newEntry, ...prev].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+      }
       setIsFormOpen(false); // Close the dialog on save
     } catch (error) {
         console.error("Failed to save journal entry:", error);
@@ -60,73 +142,44 @@ export default function JournalClient() {
     <div>
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold font-headline text-foreground">Workout Journal</h1>
-        <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
-          <DialogTrigger asChild>
-            <Button>
-              <PlusCircle className="mr-2" />
-              New Entry
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[600px]">
-            <DialogHeader>
-              <DialogTitle>New Journal Entry</DialogTitle>
-            </DialogHeader>
-            <JournalForm onSave={handleSaveEntry} onCancel={() => setIsFormOpen(false)} />
-          </DialogContent>
-        </Dialog>
+        {user && (
+          <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <PlusCircle className="mr-2" />
+                New Entry
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[600px]">
+              <DialogHeader>
+                <DialogTitle>New Journal Entry</DialogTitle>
+              </DialogHeader>
+              <JournalForm onSave={handleSaveEntry} onCancel={() => setIsFormOpen(false)} />
+            </DialogContent>
+          </Dialog>
+        )}
       </div>
 
-      <Card>
-        <CardContent className="p-0">
-           <div className="overflow-x-auto">
-            <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[250px]">Module & Exercise</TableHead>
-                    <TableHead>Observations</TableHead>
-                    <TableHead className="text-right w-[180px]">Date</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {isLoading ? (
-                      <TableRow>
-                        <TableCell colSpan={3} className="h-24 text-center">
-                           <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
-                        </TableCell>
-                      </TableRow>
-                  ) : !user ? (
-                     <TableRow>
-                      <TableCell colSpan={3} className="h-24 text-center">
-                        Please log in to view and create journal entries.
-                      </TableCell>
-                    </TableRow>
-                  ) : entries.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={3} className="h-24 text-center">
-                        You have no journal entries yet. Click "New Entry" to add one!
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    entries.map(entry => (
-                      <TableRow key={entry.id}>
-                        <TableCell>
-                          <div className="font-medium">{entry.videoTitle}</div>
-                          <div className="text-sm text-muted-foreground">{entry.module}</div>
-                        </TableCell>
-                        <TableCell>
-                          <p>{entry.notes}</p>
-                        </TableCell>
-                        <TableCell className="text-right text-muted-foreground">
-                           {new Date(entry.date).toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-           </div>
-        </CardContent>
-      </Card>
+       <Tabs defaultValue="my-entries" className="w-full">
+        <TabsList className="grid w-full grid-cols-2 mb-4">
+          <TabsTrigger value="my-entries">My Entries</TabsTrigger>
+          <TabsTrigger value="public-feed">Public Feed</TabsTrigger>
+        </TabsList>
+        <TabsContent value="my-entries">
+           <JournalTable 
+              entries={myEntries} 
+              isLoading={isLoadingMine} 
+              noEntriesText={!user ? "Please log in to view and create journal entries." : 'You have no journal entries yet. Click "New Entry" to add one!'}
+            />
+        </TabsContent>
+        <TabsContent value="public-feed">
+          <JournalTable 
+            entries={publicEntries} 
+            isLoading={isLoadingPublic}
+            noEntriesText="No public journal entries yet. Be the first to share your experience!"
+          />
+        </TabsContent>
+      </Tabs>
       
       <div className="mt-8 text-muted-foreground prose prose-lg max-w-none">
         <p>Every individual is a unique manifestation of spirit made flesh and as such, distinctive reactions will characterize each user experience. While some people may have immediate results which are tangible on multiple sensory levels, other participants may only notice slight to no perceptable changes.</p>

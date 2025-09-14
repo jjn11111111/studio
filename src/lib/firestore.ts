@@ -20,6 +20,8 @@ export interface JournalEntry {
   notes: string; // This field holds the "comments"
   date: string; // ISO string format
   module: string;
+  isPublic: boolean;
+  authorEmail?: string;
 }
 
 export interface JournalEntryData {
@@ -28,6 +30,8 @@ export interface JournalEntryData {
   videoTitle: string;
   notes: string;
   date: string;
+  isPublic: boolean;
+  authorEmail?: string;
 }
 
 // Add a new journal entry to Firestore
@@ -66,16 +70,47 @@ export async function getJournalEntries(userId: string): Promise<JournalEntry[]>
     const data = doc.data();
     const video = allVideos.find(v => v.id === data.videoId);
     
-    // The user's profile name/email is linked via the userId but not stored directly in the entry.
-    // The date and time are retrieved from the 'date' field.
     entries.push({
       id: doc.id,
       userId: data.userId,
       videoId: data.videoId,
       videoTitle: data.videoTitle,
-      notes: data.notes, // "notes" are the user's comments
+      notes: data.notes,
       date: data.date,
+      isPublic: data.isPublic || false,
       module: video?.module ?? 'Unknown Module'
+    });
+  });
+
+  return entries;
+}
+
+// Get all public journal entries
+export async function getPublicJournalEntries(): Promise<JournalEntry[]> {
+  const db = getDb();
+  const entries: JournalEntry[] = [];
+  const q = query(
+    collection(db, "journalEntries"),
+    where("isPublic", "==", true),
+    orderBy("createdAt", "desc")
+  );
+
+  const querySnapshot = await getDocs(q);
+  const allVideos = exerciseData.flatMap(unit => unit.videos.map(v => ({...v, module: unit.title})));
+
+  querySnapshot.forEach((doc) => {
+    const data = doc.data();
+    const video = allVideos.find(v => v.id === data.videoId);
+    entries.push({
+      id: doc.id,
+      userId: data.userId,
+      videoId: data.videoId,
+      videoTitle: data.videoTitle,
+      notes: data.notes,
+      date: data.date,
+      isPublic: true,
+      authorEmail: data.authorEmail,
+      module: video?.module ?? "Unknown Module",
     });
   });
 
