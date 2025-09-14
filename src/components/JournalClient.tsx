@@ -142,7 +142,7 @@ export default function JournalClient() {
   return (
     <div>
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold font-headline text-foreground">Workout Journal</h1>
+        <h1 className="text-3xl font-bold font-headline text-foreground">Journal</h1>
         {user && (
           <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
             <DialogTrigger asChild>
@@ -210,3 +210,5 @@ export default function JournalClient() {
     </div>
   );
 }
+
+    
