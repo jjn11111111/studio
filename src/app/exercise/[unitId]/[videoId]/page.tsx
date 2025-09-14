@@ -6,7 +6,7 @@ import { exerciseData } from '@/lib/data';
 import type { Unit, Video } from '@/lib/data';
 import StereoVideoPlayer from '@/components/StereoVideoPlayer';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, ArrowLeft, ArrowRight, List } from 'lucide-react';
+import { ArrowLeft, ArrowRight, List } from 'lucide-react';
 import { useProgress } from '@/hooks/use-progress';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
@@ -106,8 +106,7 @@ export default function ExercisePage() {
                             <div /> // Spacer
                             )}
                             <Button onClick={handleComplete} size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg">
-                            <CheckCircle className="mr-2 h-5 w-5" />
-                            {isComplete(video.id) ? 'Next Exercise' : 'Mark Complete & Next'}
+                            Next
                             {nextVideo && <ArrowRight className="ml-2 h-4 w-4" />}
                             </Button>
                         </div>
