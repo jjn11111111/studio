@@ -1,6 +1,5 @@
 'use client';
 import Header from '@/components/Header';
-import { PlayCircle } from 'lucide-react';
 
 export default function DirectionsPage() {
   const correctVideoUrl = 'https://firebasestorage.googleapis.com/v0/b/pinealvision.firebasestorage.app/o/Untitled%20design(10).mp4?alt=media';
