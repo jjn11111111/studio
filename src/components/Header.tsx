@@ -1,6 +1,6 @@
 'use client';
 
-import { LogOut, User, BookOpen } from 'lucide-react';
+import { LogOut, User, BookOpen, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from './ui/button';
 import { useAuth } from '@/hooks/use-auth';
@@ -47,6 +47,9 @@ export default function Header() {
             <Button asChild variant="ghost">
               <Link href="/journal">Journal</Link>
             </Button>
+             <Button asChild variant="ghost">
+              <Link href="/community">Community</Link>
+            </Button>
 
             {user ? (
               <>
@@ -78,6 +81,12 @@ export default function Header() {
                       <Link href="/journal">
                         <BookOpen className="mr-2 h-4 w-4" />
                         <span>Journal</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/community">
+                        <MessageSquare className="mr-2 h-4 w-4" />
+                        <span>Community</span>
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={signOutUser}>

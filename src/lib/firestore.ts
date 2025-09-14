@@ -1,4 +1,3 @@
-
 'use client';
 import {
   collection,
@@ -33,6 +32,63 @@ export interface JournalEntryData {
   isPublic: boolean;
   authorEmail?: string;
 }
+
+export interface CommunityPost {
+    id: string;
+    userId: string;
+    content: string;
+    createdAt: string; // ISO string format
+    authorEmail?: string;
+}
+
+export interface CommunityPostData {
+    userId: string;
+    content: string;
+    createdAt: string;
+    authorEmail?: string;
+}
+
+// Add a new community post to Firestore
+export async function addCommunityPost(postData: CommunityPostData): Promise<CommunityPost> {
+  const db = getDb();
+  const docRef = await addDoc(collection(db, 'communityPosts'), {
+    ...postData,
+    createdAt: Timestamp.now(), 
+  });
+
+  return {
+      id: docRef.id,
+      ...postData,
+  };
+}
+
+
+// Get all community posts
+export async function getCommunityPosts(): Promise<CommunityPost[]> {
+  const db = getDb();
+  const posts: CommunityPost[] = [];
+  const q = query(
+    collection(db, "communityPosts"),
+    orderBy("createdAt", "desc")
+  );
+
+  const querySnapshot = await getDocs(q);
+
+  querySnapshot.forEach((doc) => {
+    const data = doc.data();
+    const createdAtTimestamp = data.createdAt as Timestamp;
+    posts.push({
+      id: doc.id,
+      userId: data.userId,
+      content: data.content,
+      createdAt: createdAtTimestamp.toDate().toISOString(),
+      authorEmail: data.authorEmail,
+    });
+  });
+
+  return posts;
+}
+
 
 // Add a new journal entry to Firestore
 export async function addJournalEntry(entryData: JournalEntryData): Promise<JournalEntry> {
