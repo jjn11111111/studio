@@ -39,7 +39,7 @@ const nextConfig: NextConfig = {
   },
   experimental: {
     serverActions: {
-      allowedOrigins: ['localhost:*'],
+      allowedOrigins: ['localhost:*', 'app-prototyper.googleusercontent.com'],
     },
   },
 };
