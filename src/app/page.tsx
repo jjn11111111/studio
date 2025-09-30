@@ -28,7 +28,7 @@ export default function HomePage() {
               3rd Eye CrossTraining
             </h1>
             <p className="mt-6 max-w-3xl mx-auto text-lg md:text-xl text-muted-foreground animate-fade-in-up delay-200">
-              Unlock human potential through the focused application of visual and sensory stimulation. These stereoscopic video exercises are designed to gently activate the pineal gland.
+              A workout to activate, stimulate, and improve the interface which connects the soul and the physical body.
             </p>
             <div className="mt-10 flex flex-col sm:flex-row justify-center items-center gap-4 animate-fade-in-up delay-400">
               <Button asChild size="lg" className="w-full sm:w-auto">
