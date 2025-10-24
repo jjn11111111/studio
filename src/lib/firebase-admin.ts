@@ -14,7 +14,8 @@ function initializeAdminApp(): App {
   if (!serviceAccountKey) {
     throw new Error(
       'The FIREBASE_SERVICE_ACCOUNT_KEY is missing. ' +
-      'Please paste your Firebase Service Account JSON key into the .env file.'
+      'It should be automatically provided by the environment. ' +
+      'Please ensure your deployment is configured correctly.'
     );
   }
 
