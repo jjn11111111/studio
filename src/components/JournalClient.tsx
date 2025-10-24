@@ -72,7 +72,7 @@ function JournalTable({ entries, isLoading, noEntriesText }: { entries: JournalE
                       <p className="text-muted-foreground">{getAuthorDisplayName(entry)}</p>
                     </TableCell>
                     <TableCell className="text-right text-muted-foreground">
-                      {new Date(entry.date).toLocaleString('en-US', { month: 'long', day: 'numeric' })}
+                      {new Date(entry.createdAt).toLocaleString('en-US', { month: 'long', day: 'numeric' })}
                     </TableCell>
                   </TableRow>
                 ))
@@ -239,6 +239,7 @@ export default function JournalClient() {
       fetchEntries();
     } else {
       setIsLoadingMine(false);
+      setMyEntries([]);
     }
   }, [user]);
 
@@ -255,24 +256,19 @@ export default function JournalClient() {
   const handleSaveEntry = async (formData: { videoId: string; notes: string; isPublic: boolean; }) => {
     if (!user) return;
     
-    const allVideos = exerciseData.flatMap(unit => unit.videos);
-    const video = allVideos.find(v => v.id === formData.videoId);
-
-    if (!video) return;
-
     const newEntryData = { 
       ...formData,
       userId: user.uid,
-      videoTitle: video.title,
+      videoTitle: '', // This will be populated by addJournalEntry
       date: new Date().toISOString(),
       authorEmail: user.email ?? undefined,
     };
 
     try {
       const newEntry = await addJournalEntry(newEntryData);
-      setMyEntries(prev => [newEntry, ...prev].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+      setMyEntries(prev => [newEntry, ...prev].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
       if (newEntry.isPublic) {
-        setPublicEntries(prev => [newEntry, ...prev].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+        setPublicEntries(prev => [newEntry, ...prev].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
       }
       setIsFormOpen(false); // Close the dialog on save
     } catch (error) {

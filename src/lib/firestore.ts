@@ -7,6 +7,8 @@ import {
   where,
   orderBy,
   Timestamp,
+  doc,
+  getDoc,
 } from 'firebase/firestore';
 import { db as getDb } from './firebase';
 import { exerciseData } from './data';
@@ -21,6 +23,7 @@ export interface JournalEntry {
   module: string;
   isPublic: boolean;
   authorEmail?: string;
+  createdAt: string;
 }
 
 export interface JournalEntryData {
@@ -56,9 +59,14 @@ export async function addCommunityPost(postData: CommunityPostData): Promise<Com
     createdAt: Timestamp.now(), 
   });
 
+  const newDoc = await getDoc(docRef);
+  const data = newDoc.data();
+  const createdAtTimestamp = data?.createdAt as Timestamp;
+
   return {
       id: docRef.id,
       ...postData,
+      createdAt: createdAtTimestamp.toDate().toISOString(),
   };
 }
 
@@ -93,19 +101,26 @@ export async function getCommunityPosts(): Promise<CommunityPost[]> {
 // Add a new journal entry to Firestore
 export async function addJournalEntry(entryData: JournalEntryData): Promise<JournalEntry> {
   const db = getDb();
-  // The 'createdAt' field automatically includes date and time.
+  const allVideos = exerciseData.flatMap(unit => unit.videos.map(v => ({ ...v, module: unit.title })));
+  const videoInfo = allVideos.find(v => v.id === entryData.videoId);
+
   const docRef = await addDoc(collection(db, 'journalEntries'), {
     ...entryData,
-    createdAt: Timestamp.now(), 
+    videoTitle: videoInfo?.title ?? 'Unknown Video',
+    module: videoInfo?.module ?? 'Unknown Module',
+    createdAt: Timestamp.now(),
   });
 
-  const allVideos = exerciseData.flatMap(unit => unit.videos.map(v => ({...v, module: unit.title})));
-  const video = allVideos.find(v => v.id === entryData.videoId);
+  const newDoc = await getDoc(docRef);
+  const data = newDoc.data();
+  const createdAtTimestamp = data?.createdAt as Timestamp;
 
   return {
-      id: docRef.id,
-      ...entryData,
-      module: video?.module ?? 'Unknown Module'
+    id: docRef.id,
+    ...entryData,
+    videoTitle: videoInfo?.title ?? 'Unknown Video',
+    module: videoInfo?.module ?? 'Unknown Module',
+    createdAt: createdAtTimestamp.toDate().toISOString(),
   };
 }
 
@@ -119,12 +134,10 @@ export async function getJournalEntries(userId: string): Promise<JournalEntry[]>
     orderBy('createdAt', 'desc')
   );
 
-  const allVideos = exerciseData.flatMap(unit => unit.videos.map(v => ({...v, module: unit.title})));
-
   const querySnapshot = await getDocs(q);
   querySnapshot.forEach((doc) => {
     const data = doc.data();
-    const video = allVideos.find(v => v.id === data.videoId);
+    const createdAtTimestamp = data.createdAt as Timestamp;
     
     entries.push({
       id: doc.id,
@@ -135,7 +148,8 @@ export async function getJournalEntries(userId: string): Promise<JournalEntry[]>
       date: data.date,
       isPublic: data.isPublic || false,
       authorEmail: data.authorEmail,
-      module: video?.module ?? 'Unknown Module'
+      module: data.module ?? 'Unknown Module',
+      createdAt: createdAtTimestamp.toDate().toISOString(),
     });
   });
 
@@ -153,11 +167,10 @@ export async function getPublicJournalEntries(): Promise<JournalEntry[]> {
   );
 
   const querySnapshot = await getDocs(q);
-  const allVideos = exerciseData.flatMap(unit => unit.videos.map(v => ({...v, module: unit.title})));
 
   querySnapshot.forEach((doc) => {
     const data = doc.data();
-    const video = allVideos.find(v => v.id === data.videoId);
+    const createdAtTimestamp = data.createdAt as Timestamp;
     entries.push({
       id: doc.id,
       userId: data.userId,
@@ -167,7 +180,8 @@ export async function getPublicJournalEntries(): Promise<JournalEntry[]> {
       date: data.date,
       isPublic: true,
       authorEmail: data.authorEmail,
-      module: video?.module ?? "Unknown Module",
+      module: data.module ?? "Unknown Module",
+      createdAt: createdAtTimestamp.toDate().toISOString(),
     });
   });
 
@@ -187,11 +201,10 @@ export async function getPublicJournalEntriesForVideo(videoId: string): Promise<
   );
 
   const querySnapshot = await getDocs(q);
-  const allVideos = exerciseData.flatMap(unit => unit.videos.map(v => ({...v, module: unit.title})));
 
   querySnapshot.forEach((doc) => {
     const data = doc.data();
-    const video = allVideos.find(v => v.id === data.videoId);
+    const createdAtTimestamp = data.createdAt as Timestamp;
     entries.push({
       id: doc.id,
       userId: data.userId,
@@ -201,7 +214,8 @@ export async function getPublicJournalEntriesForVideo(videoId: string): Promise<
       date: data.date,
       isPublic: true,
       authorEmail: data.authorEmail,
-      module: video?.module ?? "Unknown Module",
+      module: data.module ?? "Unknown Module",
+      createdAt: createdAtTimestamp.toDate().toISOString(),
     });
   });
 

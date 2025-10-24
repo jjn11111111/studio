@@ -88,7 +88,7 @@ export default function ExerciseJournalPage() {
                           <TableCell className="font-medium">{getAuthorDisplayName(entry)}</TableCell>
                           <TableCell>{entry.notes}</TableCell>
                           <TableCell className="text-right text-muted-foreground">
-                             {new Date(entry.date).toLocaleString('en-US', { month: 'long', day: 'numeric' })}
+                             {new Date(entry.createdAt).toLocaleString('en-US', { month: 'long', day: 'numeric' })}
                           </TableCell>
                         </TableRow>
                       ))
