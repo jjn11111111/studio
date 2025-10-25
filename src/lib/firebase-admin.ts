@@ -1,5 +1,5 @@
 
-import { initializeApp, getApps, App, cert } from 'firebase-admin/app';
+import { initializeApp, getApps, App } from 'firebase-admin/app';
 
 const ADMIN_APP_NAME = 'firebase-admin-app-workaround';
 
@@ -9,29 +9,13 @@ function initializeAdminApp(): App {
     return existingApp;
   }
 
-  const serviceAccountKey = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
-
-  if (!serviceAccountKey) {
-    throw new Error(
-      'The FIREBASE_SERVICE_ACCOUNT_KEY is missing. ' +
-      'It should be automatically provided by the environment. ' +
-      'Please ensure your deployment is configured correctly.'
-    );
-  }
-
+  // When deployed in a Google Cloud environment (like App Hosting),
+  // the SDK automatically detects the service account credentials.
+  // No explicit configuration is needed.
   try {
-    // The service account key is a JSON string, so it needs to be parsed.
-    const serviceAccount = JSON.parse(serviceAccountKey);
-    
-    return initializeApp({
-      credential: cert(serviceAccount),
-      // Add your databaseURL here if you are using Realtime Database
-      // databaseURL: `https://${serviceAccount.project_id}.firebaseio.com`,
-    }, ADMIN_APP_NAME);
-
+    return initializeApp({}, ADMIN_APP_NAME);
   } catch (error: any) {
-    console.error('Failed to parse FIREBASE_SERVICE_ACCOUNT_KEY or initialize Firebase Admin app:', error);
-    // Re-throwing the error is important to prevent the app from running with a misconfigured admin SDK.
+    console.error('Failed to initialize Firebase Admin app:', error);
     throw new Error(`Failed to initialize Firebase Admin SDK: ${error.message}`);
   }
 }
