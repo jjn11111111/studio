@@ -42,9 +42,6 @@ const nextConfig: NextConfig = {
       allowedOrigins: ['localhost:*', 'app-prototyper.googleusercontent.com'],
     },
   },
-  env: {
-    NEXT_PUBLIC_RECAPTCHA_V3_SITE_KEY: process.env.NEXT_PUBLIC_RECAPTCHA_V3_SITE_KEY,
-  }
 };
 
 export default nextConfig;
