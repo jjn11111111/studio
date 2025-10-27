@@ -5,7 +5,6 @@ import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 import Footer from '@/components/Footer';
 import { AuthProvider } from '@/hooks/use-auth';
-import { Loader2 } from 'lucide-react';
 import { ProgressProvider } from '@/hooks/use-progress';
 
 export const metadata: Metadata = {
