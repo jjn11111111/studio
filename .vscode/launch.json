@@ -1,17 +1,1 @@
 
-{
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "type": "node-terminal",
-      "name": "Run Next.js Dev Server",
-      "request": "launch",
-      "command": "npm run dev",
-      "serverReadyAction": {
-        "pattern": "started server on .+, url: (https?://.+)",
-        "uriFormat": "%s",
-        "action": "openExternally"
-      }
-    }
-  ]
-}
