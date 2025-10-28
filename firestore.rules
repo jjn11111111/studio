@@ -1,45 +1,9 @@
-
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    // Helper function to check if a user is authenticated
-    function isAuthenticated() {
-      return request.auth != null;
-    }
-
-    // Helper function to check if the user is the owner of the document
-    function isOwner(userId) {
-      return request.auth.uid == userId;
-    }
-
-    // Users can only read and write their own profile.
-    match /users/{userId} {
-      allow read, update: if isAuthenticated() && isOwner(userId);
-      // Deny create and delete to prevent users from creating their own profiles outside the signup flow
-      // or deleting their user record. Creation is handled by a server-side function.
-      allow create, delete: if false;
-    }
-
-    // Journal Entries
-    match /journalEntries/{entryId} {
-      // Users can create entries for themselves.
-      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
-      // Users can read their own entries, or any entry that is marked as public.
-      allow read: if isAuthenticated() && (isOwner(resource.data.userId) || resource.data.isPublic == true);
-      // Users can only update or delete their own entries.
-      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
-    }
-    
-    // Community Posts
-    match /communityPosts/{postId} {
-        // Any authenticated user can create a post.
-        allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
-        // Any authenticated user can read all posts.
-        allow read: if isAuthenticated();
-        // Only the author can update or delete their own post.
-        allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }
