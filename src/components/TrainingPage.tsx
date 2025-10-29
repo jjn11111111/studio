@@ -28,10 +28,6 @@ export default function TrainingPage() {
     return `unit-${unit.id.split('-')[1]}-theme`;
   };
 
-  const getColorClass = (unit: Unit) => {
-    return `text-unit-${unit.id.split('-')[1]}`;
-  }
-
   return (
     <div className="flex flex-col h-screen">
       <Header />

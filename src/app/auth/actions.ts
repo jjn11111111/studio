@@ -8,7 +8,6 @@ import {signInWithEmailAndPassword} from 'firebase/auth';
 import {getAuth as getClientAuth} from 'firebase/auth';
 import {app as clientApp} from '@/lib/firebase';
 import {getFirestore as getAdminFirestore} from 'firebase-admin/firestore';
-import type { App } from 'firebase-admin/app';
 import Stripe from 'stripe';
 
 function getAdminAuth() {

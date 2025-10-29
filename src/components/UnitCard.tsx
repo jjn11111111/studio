@@ -1,7 +1,7 @@
 
 'use client';
 import type { Unit, Video } from '@/lib/data';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { Card, CardContent, CardDescription, CardHeader } from './ui/card';
 import { Button } from './ui/button';
 import { Progress } from './ui/progress';
 import { ArrowRight, Lock, PlayCircle } from 'lucide-react';
