@@ -6,7 +6,6 @@ import {onAuthStateChanged, User, getAuth} from 'firebase/auth';
 import {app} from '@/lib/firebase';
 import {Loader2} from 'lucide-react';
 import {useRouter, usePathname} from 'next/navigation';
-import {clearSessionCookie} from '@/app/auth/actions';
 import { getUserProfile, UserProfile } from '@/lib/firestore';
 
 interface AuthContextType {
@@ -61,7 +60,6 @@ export function AuthProvider({children}: {children: ReactNode}) {
   const signOutUser = async (): Promise<void> => {
     try {
       await auth.signOut();
-      await clearSessionCookie();
       router.push('/login');
       router.refresh();
     } catch (e: any)      {

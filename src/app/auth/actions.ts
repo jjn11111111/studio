@@ -1,13 +1,12 @@
 
 'use server';
 
-import {cookies} from 'next/headers';
-import {getAuth as getAdminAuthSdk} from 'firebase-admin/auth';
-import {getFirebaseAdminApp} from '@/lib/firebase-admin';
-import {signInWithEmailAndPassword} from 'firebase/auth';
-import {getAuth as getClientAuth} from 'firebase/auth';
-import {app as clientApp} from '@/lib/firebase';
-import {getFirestore as getAdminFirestore} from 'firebase-admin/firestore';
+import { getAuth as getAdminAuthSdk } from 'firebase-admin/auth';
+import { getFirebaseAdminApp } from '@/lib/firebase-admin';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { getAuth as getClientAuth } from 'firebase/auth';
+import { app as clientApp } from '@/lib/firebase';
+import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import Stripe from 'stripe';
 
 function getAdminAuth() {
@@ -20,28 +19,6 @@ function getAdminAuth() {
   }
 }
 
-export async function createSessionCookie(idToken: string) {
-  const { auth, error } = getAdminAuth();
-  if (error || !auth) {
-      console.error("Failed to create session cookie: Firebase Admin App not initialized.", error);
-      return { error: "Failed to create session cookie: " + (error || "Firebase Admin App not initialized.") };
-  }
-  const expiresIn = 60 * 60 * 24 * 5 * 1000; // 5 days
-  const sessionCookie = await auth.createSessionCookie(idToken, {expiresIn});
-  cookies().set('__session', sessionCookie, {
-    maxAge: expiresIn,
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    path: '/',
-    sameSite: 'lax',
-  });
-  return { error: null };
-}
-
-export async function clearSessionCookie() {
-  cookies().delete('__session');
-}
-
 export async function signUpWithEmail(formData: FormData) {
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
@@ -50,48 +27,42 @@ export async function signUpWithEmail(formData: FormData) {
     return {error: 'Email and password are required.'};
   }
   
-  const { auth, adminDb, error: adminError } = getAdminAuth();
+  const { auth: adminAuth, adminDb, error: adminError } = getAdminAuth();
   
-  if (adminError || !auth || !adminDb) {
+  if (adminError || !adminAuth || !adminDb) {
       return { error: adminError || 'Server is not configured for authentication. Please contact support.' };
   }
   
   try {
-    const userRecord = await auth.createUser({
-      email,
-      password,
-    });
+    // First, create the user on the client to get an ID token and a UID
+    const clientAuth = getClientAuth(clientApp);
+    const userCredential = await createUserWithEmailAndPassword(clientAuth, email, password);
+    const user = userCredential.user;
+
+    // Use the admin SDK to set a custom claim if needed or perform other server-side actions.
+    // For now, we just create the profile document.
     
     // Create a customer in Stripe
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
       apiVersion: '2024-04-10',
     });
     const customer = await stripe.customers.create({
-      email: userRecord.email,
+      email: user.email,
       metadata: {
-        firebaseUID: userRecord.uid,
+        firebaseUID: user.uid,
       },
     });
 
-    await adminDb.collection('users').doc(userRecord.uid).set({
-        email: userRecord.email,
+    await adminDb.collection('users').doc(user.uid).set({
+        email: user.email,
         createdAt: new Date(),
         subscription: { status: 'free' },
         stripeCustomerId: customer.id,
     });
-
-    // Sign in the user on the client to get an ID token, then create the session cookie.
-    const clientAuth = getClientAuth(clientApp);
-    const userCredential = await signInWithEmailAndPassword(clientAuth, email, password);
-    const idToken = await userCredential.user.getIdToken();
-
-    const sessionResult = await createSessionCookie(idToken);
-    if (sessionResult.error) {
-        return { error: sessionResult.error };
-    }
+    
     return {success: true};
   } catch (error: any) {
-    if (error.code === 'auth/email-already-exists') {
+    if (error.code === 'auth/email-already-exists' || error.code === 'auth/email-already-in-use') {
         return { error: 'This email address is already in use. Please log in or use a different email.' };
     }
     console.error("Sign up error:", error);
@@ -107,27 +78,16 @@ export async function signInWithEmail(formData: FormData) {
     return {error: 'Email and password are required.'};
   }
   
-  const { auth, error: adminError } = getAdminAuth();
-  if (adminError || !auth) {
-      return { error: adminError || 'Server is not configured for authentication. Please contact support.' };
-  }
-
   try {
-    // We must use the client SDK to sign in and get an ID token.
+    // We only need to use the client SDK to sign in.
+    // The onAuthStateChanged listener will handle the rest.
     const clientAuth = getClientAuth(clientApp);
-    const userCredential = await signInWithEmailAndPassword(clientAuth, email, password);
-    const idToken = await userCredential.user.getIdToken();
-
-    // The ID token can now be used to create a session cookie on the server.
-    const sessionResult = await createSessionCookie(idToken);
-    if (sessionResult.error) {
-        return { error: sessionResult.error };
-    }
+    await signInWithEmailAndPassword(clientAuth, email, password);
 
     return {success: true};
   } catch (error: any) {
     // Catch specific Firebase auth errors for client-side sign-in
-    if (error.code === 'auth/invalid-credential') {
+    if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
         return {error: 'Invalid email or password.'};
     }
     console.error("Sign in error:", error);
