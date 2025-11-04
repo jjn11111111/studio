@@ -1,6 +1,9 @@
 
 'use client';
 import Header from '@/components/Header';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
 
 export default function DirectionsPage() {
   const correctVideoUrl = 'https://firebasestorage.googleapis.com/v0/b/pinealvision.firebasestorage.app/o/Untitled%20design(10).mp4?alt=media';
@@ -50,16 +53,22 @@ export default function DirectionsPage() {
                 autoPlay
                 muted
                 playsInline
+                loop
                 className="w-full h-auto"
               />
             </div>
           ))}
         </div>
 
-        <div className="max-w-4xl mx-auto space-y-6 text-lg text-muted-foreground mt-12">
-            <p>
-                All exercises created for this app require users to maintain stereoscopic viewing for the duration of each exercise. This is a key component, and while some level of 3rd eye stimulation may occur with standard vision, optimal results will most likely not occur.
-            </p>
+        <div className="max-w-4xl mx-auto mt-12">
+            <div className="flex justify-between items-center mt-8 border-t pt-8">
+                <Button asChild variant="outline">
+                <Link href="/about">Previous: About</Link>
+                </Button>
+                <Button asChild size="lg">
+                <Link href="/training">Next: Start Training <ArrowRight className="ml-2" /></Link>
+                </Button>
+            </div>
         </div>
       </main>
     </div>

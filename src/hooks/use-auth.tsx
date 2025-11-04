@@ -6,8 +6,8 @@ import {onAuthStateChanged, User, getAuth} from 'firebase/auth';
 import {app} from '@/lib/firebase';
 import {Loader2} from 'lucide-react';
 import {useRouter, usePathname} from 'next/navigation';
-import {clearSessionCookie} from '@/app/auth/actions';
 import { getUserProfile, UserProfile } from '@/lib/firestore';
+import { createUserProfile } from '@/app/auth/actions';
 
 interface AuthContextType {
   user: User | null;
@@ -34,17 +34,32 @@ export function AuthProvider({children}: {children: ReactNode}) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setIsLoading(true);
-      setUser(user);
       if (user) {
+        setUser(user);
         const token = await user.getIdToken();
         setIdToken(token);
-        const profile = await getUserProfile(user.uid);
+        
+        let profile = await getUserProfile(user.uid);
+
+        // If no profile exists, create it. This is more reliable than timestamp checks.
+        if (!profile && user.email) {
+          console.log('No profile found for new or existing user, creating one...');
+          const { error } = await createUserProfile(user.uid, user.email);
+          if (error) {
+            console.error("Failed to create user profile:", error);
+          } else {
+            // Fetch the profile again after creation
+            profile = await getUserProfile(user.uid);
+          }
+        }
+        
         setUserProfile(profile);
 
         if (pathname === '/login') {
           router.replace('/training');
         }
       } else {
+        setUser(null);
         setIdToken(null);
         setUserProfile(null);
         
@@ -61,7 +76,6 @@ export function AuthProvider({children}: {children: ReactNode}) {
   const signOutUser = async (): Promise<void> => {
     try {
       await auth.signOut();
-      await clearSessionCookie();
       router.push('/login');
       router.refresh();
     } catch (e: any)      {
@@ -77,7 +91,7 @@ export function AuthProvider({children}: {children: ReactNode}) {
     signOutUser,
   };
 
-  if (isLoading) {
+  if (isLoading && !user) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Loader2 className="w-8 h-8 animate-spin" />

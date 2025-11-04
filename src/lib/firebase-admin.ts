@@ -1,5 +1,5 @@
 
-import { initializeApp, getApps, App } from 'firebase-admin/app';
+import { initializeApp, getApps, App, cert } from 'firebase-admin/app';
 
 const ADMIN_APP_NAME = 'firebase-admin-app-workaround';
 
@@ -10,8 +10,7 @@ function initializeAdminApp(): App {
   }
 
   // When deployed in a Google Cloud environment (like App Hosting),
-  // the SDK automatically detects the service account credentials.
-  // No explicit configuration is needed.
+  // the SDK automatically detects the service account credentials if no `credential` is provided.
   try {
     return initializeApp({}, ADMIN_APP_NAME);
   } catch (error: any) {
