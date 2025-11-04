@@ -9,15 +9,54 @@ import { app as clientApp } from '@/lib/firebase';
 import { getFirestore as getAdminFirestore } from 'firebase-admin/firestore';
 import Stripe from 'stripe';
 
-function getAdminAuth() {
+function getAdminServices() {
   try {
     const app = getFirebaseAdminApp();
-    return { auth: getAdminAuthSdk(app), adminDb: getAdminFirestore(app), error: null };
+    return { adminDb: getAdminFirestore(app), error: null };
   } catch (error: any) {
     console.error("Failed to get Firebase Admin services:", error.message);
-    return { auth: null, adminDb: null, error: error.message };
+    return { adminDb: null, error: error.message };
   }
 }
+
+export async function createUserProfile(uid: string, email: string) {
+    const { adminDb, error: adminError } = getAdminServices();
+
+    if (adminError || !adminDb) {
+        return { error: adminError || 'Server is not configured correctly.' };
+    }
+
+    try {
+        const userDoc = await adminDb.collection('users').doc(uid).get();
+        if (userDoc.exists) {
+            return { success: true, message: 'Profile already exists.' };
+        }
+
+        const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+            apiVersion: '2024-04-10',
+        });
+
+        const customer = await stripe.customers.create({
+            email: email,
+            metadata: {
+                firebaseUID: uid,
+            },
+        });
+
+        await adminDb.collection('users').doc(uid).set({
+            email: email,
+            createdAt: new Date(),
+            subscription: { status: 'free' },
+            stripeCustomerId: customer.id,
+        });
+
+        return { success: true };
+    } catch (error: any) {
+        console.error("Error creating user profile:", error);
+        return { error: 'Failed to create user profile on the server.' };
+    }
+}
+
 
 export async function signUpWithEmail(formData: FormData) {
   const email = formData.get('email') as string;
@@ -27,39 +66,11 @@ export async function signUpWithEmail(formData: FormData) {
     return {error: 'Email and password are required.'};
   }
   
-  const { auth: adminAuth, adminDb, error: adminError } = getAdminAuth();
-  
-  if (adminError || !adminAuth || !adminDb) {
-      return { error: adminError || 'Server is not configured for authentication. Please contact support.' };
-  }
-  
   try {
-    // First, create the user on the client to get an ID token and a UID
+    // This step ONLY creates the user in Firebase Auth on the client.
+    // The useAuth hook will handle creating the profile document.
     const clientAuth = getClientAuth(clientApp);
-    const userCredential = await createUserWithEmailAndPassword(clientAuth, email, password);
-    const user = userCredential.user;
-
-    // Use the admin SDK to set a custom claim if needed or perform other server-side actions.
-    // For now, we just create the profile document.
-    
-    // Create a customer in Stripe
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-      apiVersion: '2024-04-10',
-    });
-    const customer = await stripe.customers.create({
-      email: user.email,
-      metadata: {
-        firebaseUID: user.uid,
-      },
-    });
-
-    await adminDb.collection('users').doc(user.uid).set({
-        email: user.email,
-        createdAt: new Date(),
-        subscription: { status: 'free' },
-        stripeCustomerId: customer.id,
-    });
-    
+    await createUserWithEmailAndPassword(clientAuth, email, password);
     return {success: true};
   } catch (error: any) {
     if (error.code === 'auth/email-already-exists' || error.code === 'auth/email-already-in-use') {
@@ -79,14 +90,11 @@ export async function signInWithEmail(formData: FormData) {
   }
   
   try {
-    // We only need to use the client SDK to sign in.
-    // The onAuthStateChanged listener will handle the rest.
     const clientAuth = getClientAuth(clientApp);
     await signInWithEmailAndPassword(clientAuth, email, password);
 
     return {success: true};
   } catch (error: any) {
-    // Catch specific Firebase auth errors for client-side sign-in
     if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
         return {error: 'Invalid email or password.'};
     }

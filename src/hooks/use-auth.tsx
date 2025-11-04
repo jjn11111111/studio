@@ -6,7 +6,7 @@ import {onAuthStateChanged, User, getAuth} from 'firebase/auth';
 import {app} from '@/lib/firebase';
 import {Loader2} from 'lucide-react';
 import {useRouter, usePathname} from 'next/navigation';
-import { getUserProfile, UserProfile } from '@/lib/firestore';
+import { getUserProfile, UserProfile, createUserProfile } from '@/lib/firestore';
 
 interface AuthContextType {
   user: User | null;
@@ -33,17 +33,30 @@ export function AuthProvider({children}: {children: ReactNode}) {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setIsLoading(true);
-      setUser(user);
       if (user) {
+        setUser(user);
         const token = await user.getIdToken();
         setIdToken(token);
-        const profile = await getUserProfile(user.uid);
+        
+        // Check for profile
+        let profile = await getUserProfile(user.uid);
+
+        // If it's a new user, the profile might not exist yet. Create it.
+        const isNewUser = user.metadata.creationTime === user.metadata.lastSignInTime;
+        if (!profile && user.email) {
+          console.log('No profile found, creating one...');
+          await createUserProfile(user.uid, user.email);
+          // Fetch the profile again after creation
+          profile = await getUserProfile(user.uid);
+        }
+        
         setUserProfile(profile);
 
         if (pathname === '/login') {
           router.replace('/training');
         }
       } else {
+        setUser(null);
         setIdToken(null);
         setUserProfile(null);
         
@@ -75,7 +88,7 @@ export function AuthProvider({children}: {children: ReactNode}) {
     signOutUser,
   };
 
-  if (isLoading) {
+  if (isLoading && !user) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <Loader2 className="w-8 h-8 animate-spin" />
