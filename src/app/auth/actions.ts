@@ -1,7 +1,6 @@
 
 'use server';
 
-import { getAuth as getAdminAuthSdk } from 'firebase-admin/auth';
 import { getFirebaseAdminApp } from '@/lib/firebase-admin';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { getAuth as getClientAuth } from 'firebase/auth';
