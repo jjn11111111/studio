@@ -127,11 +127,17 @@ export async function signInWithEmail(formData: FormData) {
 
     return {success: true};
   } catch (error: any) {
-    // Catch specific Firebase auth errors for client-side sign-in
-    if (error.code === 'auth/invalid-credential') {
-        return {error: 'Invalid email or password.'};
-    }
-    console.error("Sign in error:", error);
-    return {error: 'An unknown error occurred during sign in.'};
+    // OLD Firebase
+import { getAuth } from 'firebase/auth'
+
+// NEW Supabase
+import { supabase } from '@/lib/supabase'
+
+// OLD sign up
+const userRecord = await admin.auth().createUser({ email, password })
+
+// NEW sign up
+const { data, error } = await supabase.auth.signUp({ email, password })
+if (error) throw error
   }
 }
