@@ -36,9 +36,7 @@ export default function ExerciseJournalPage() {
   }, [videoId]);
 
   const getAuthorDisplayName = (entry: JournalEntry) => {
-    if (entry.authorEmail) {
-      return entry.authorEmail.split('@')[0];
-    }
+    // NOTE: All entries are now anonymous since auth is removed
     return 'Anonymous';
   };
 

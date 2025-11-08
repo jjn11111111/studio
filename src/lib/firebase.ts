@@ -1,10 +1,8 @@
 
 'use client';
-// Import the functions you need from the SDKs you need
+// Firebase configuration for Firestore only (Auth removed for open access)
 import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
-import { getAuth, type Auth } from 'firebase/auth';
 import { getFirestore, type Firestore } from 'firebase/firestore';
-import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -19,13 +17,8 @@ const firebaseConfig = {
 // Initialize Firebase
 const app: FirebaseApp = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
-// Initialize App Check
-if (typeof window !== 'undefined') {
-  initializeAppCheck(app, {
-    provider: new ReCaptchaV3Provider(process.env.NEXT_PUBLIC_RECAPTCHA_V3_SITE_KEY!),
-    isTokenAutoRefreshEnabled: true
-  });
-}
+// NOTE: Firebase Auth and AppCheck have been removed to allow open access to all visitors
+// All authentication requirements have been stripped from the application
 
 const getDbInstance = (): Firestore => {
     return getFirestore(app);
