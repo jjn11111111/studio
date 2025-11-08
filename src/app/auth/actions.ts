@@ -127,17 +127,10 @@ export async function signInWithEmail(formData: FormData) {
 
     return {success: true};
   } catch (error: any) {
-    // OLD Firebase
-import { getAuth } from 'firebase/auth'
+    import { supabase } from '@/lib/supabase';
 
-// NEW Supabase
-import { supabase } from '@/lib/supabase'
-
-// OLD sign up
-const userRecord = await admin.auth().createUser({ email, password })
-
-// NEW sign up
-const { data, error } = await supabase.auth.signUp({ email, password })
-if (error) throw error
-  }
+export async function signUp(email: string, password: string) {
+  const { data, error } = await supabase.auth.signUp({ email, password });
+  if (error) throw error;
+  return data.user;
 }
