@@ -1,45 +1,38 @@
 
 rules_version = '2';
 
+// NOTE: All authentication requirements removed - open access for all visitors
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper function to check if a user is authenticated
-    function isAuthenticated() {
-      return request.auth != null;
-    }
-
-    // Helper function to check if the user is the owner of the document
-    function isOwner(userId) {
-      return request.auth.uid == userId;
-    }
-
-    // Users can only read and write their own profile.
+    // Users collection - allow read for backward compatibility, deny writes
     match /users/{userId} {
-      allow read, update: if isAuthenticated() && isOwner(userId);
-      // Deny create and delete to prevent users from creating their own profiles outside the signup flow
-      // or deleting their user record. Creation is handled by a server-side function.
-      allow create, delete: if false;
+      allow read: if true; // Open read access
+      allow write: if false; // Deny writes since auth is removed
     }
 
-    // Journal Entries
+    // Journal Entries - fully open access for all visitors
     match /journalEntries/{entryId} {
-      // Users can create entries for themselves.
-      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
-      // Users can read their own entries, or any entry that is marked as public.
-      allow read: if isAuthenticated() && (isOwner(resource.data.userId) || resource.data.isPublic == true);
-      // Users can only update or delete their own entries.
-      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+      // Anyone can create entries (anonymously)
+      allow create: if true;
+      // Anyone can read all entries (public and private)
+      allow read: if true;
+      // Anyone can update entries (consider limiting this in production)
+      allow update: if true;
+      // Anyone can delete entries (consider limiting this in production)
+      allow delete: if true;
     }
     
-    // Community Posts
+    // Community Posts - fully open access for all visitors
     match /communityPosts/{postId} {
-        // Any authenticated user can create a post.
-        allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
-        // Any authenticated user can read all posts.
-        allow read: if isAuthenticated();
-        // Only the author can update or delete their own post.
-        allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+      // Anyone can create posts (anonymously)
+      allow create: if true;
+      // Anyone can read all posts
+      allow read: if true;
+      // Anyone can update posts (consider limiting this in production)
+      allow update: if true;
+      // Anyone can delete posts (consider limiting this in production)
+      allow delete: if true;
     }
   }
 }
