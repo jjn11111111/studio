@@ -14,6 +14,8 @@ import {
 import { db as getDb } from './firebase';
 import { exerciseData } from './data';
 
+// NOTE: User authentication removed - all users are now anonymous
+// UserProfile interface kept for compatibility but no longer used for auth
 export interface UserProfile {
   email: string;
   createdAt: string;
@@ -25,19 +27,19 @@ export interface UserProfile {
 
 export interface JournalEntry {
   id: string;
-  userId: string;
+  userId: string; // TODO: Consider removing userId field in future cleanup
   videoId: string;
   videoTitle: string;
-  notes: string; // This field holds the "comments"
-  date: string; // ISO string format
+  notes: string;
+  date: string;
   module: string;
   isPublic: boolean;
-  authorEmail?: string;
+  authorEmail?: string; // Always 'Anonymous' now
   createdAt: string;
 }
 
 export interface JournalEntryData {
-  userId: string;
+  userId: string; // TODO: Remove in future - always use 'anonymous' 
   videoId: string;
   videoTitle: string;
   notes: string;
@@ -48,46 +50,38 @@ export interface JournalEntryData {
 
 export interface CommunityPost {
     id: string;
-    userId: string;
+    userId: string; // TODO: Consider removing userId field in future cleanup
     content: string;
-    createdAt: string; // ISO string format
-    authorEmail?: string;
+    createdAt: string;
+    authorEmail?: string; // Always 'Anonymous' now
 }
 
 export interface CommunityPostData {
-    userId: string;
+    userId: string; // TODO: Remove in future - always use 'anonymous'
     content: string;
     createdAt: string;
     authorEmail?: string;
 }
 
-
-// Get a user's profile from Firestore
+// Stub function - no longer retrieves actual user profiles
 export async function getUserProfile(userId: string): Promise<UserProfile | null> {
-  const db = getDb();
-  const userDocRef = doc(db, 'users', userId);
-  const userDocSnap = await getDoc(userDocRef);
-
-  if (userDocSnap.exists()) {
-    const data = userDocSnap.data();
-    const createdAtTimestamp = data.createdAt as Timestamp;
-    return {
-      email: data.email,
-      createdAt: createdAtTimestamp.toDate().toISOString(),
-      subscription: data.subscription,
-      stripeCustomerId: data.stripeCustomerId,
-    };
-  } else {
-    return null;
-  }
+  // NOTE: Authentication removed - this function is stubbed and always returns null
+  return null;
 }
 
-
-// Add a new community post to Firestore
+// Add a new community post to Firestore (no auth required)
 export async function addCommunityPost(postData: CommunityPostData): Promise<CommunityPost> {
   const db = getDb();
-  const docRef = await addDoc(collection(db, 'communityPosts'), {
+  
+  // Force anonymous authorship
+  const anonymousData = {
     ...postData,
+    userId: 'anonymous',
+    authorEmail: undefined, // Remove email for privacy
+  };
+  
+  const docRef = await addDoc(collection(db, 'communityPosts'), {
+    ...anonymousData,
     createdAt: Timestamp.now(), 
   });
 
@@ -97,11 +91,12 @@ export async function addCommunityPost(postData: CommunityPostData): Promise<Com
 
   return {
       id: docRef.id,
-      ...postData,
+      userId: 'anonymous',
+      content: postData.content,
       createdAt: createdAtTimestamp.toDate().toISOString(),
+      authorEmail: undefined, // Always anonymous
   };
 }
-
 
 // Get all community posts
 export async function getCommunityPosts(): Promise<CommunityPost[]> {
@@ -119,25 +114,31 @@ export async function getCommunityPosts(): Promise<CommunityPost[]> {
     const createdAtTimestamp = data.createdAt as Timestamp;
     posts.push({
       id: doc.id,
-      userId: data.userId,
+      userId: data.userId || 'anonymous',
       content: data.content,
       createdAt: createdAtTimestamp.toDate().toISOString(),
-      authorEmail: data.authorEmail,
+      authorEmail: undefined, // Strip email for anonymous access
     });
   });
 
   return posts;
 }
 
-
-// Add a new journal entry to Firestore
+// Add a new journal entry to Firestore (no auth required)
 export async function addJournalEntry(entryData: JournalEntryData): Promise<JournalEntry> {
   const db = getDb();
   const allVideos = exerciseData.flatMap(unit => unit.videos.map(v => ({ ...v, module: unit.title })));
   const videoInfo = allVideos.find(v => v.id === entryData.videoId);
 
-  const docRef = await addDoc(collection(db, 'journalEntries'), {
+  // Force anonymous authorship
+  const anonymousData = {
     ...entryData,
+    userId: 'anonymous',
+    authorEmail: undefined, // Remove email for privacy
+  };
+
+  const docRef = await addDoc(collection(db, 'journalEntries'), {
+    ...anonymousData,
     videoTitle: videoInfo?.title ?? 'Unknown Video',
     module: videoInfo?.module ?? 'Unknown Module',
     createdAt: Timestamp.now(),
@@ -149,20 +150,27 @@ export async function addJournalEntry(entryData: JournalEntryData): Promise<Jour
 
   return {
     id: docRef.id,
-    ...entryData,
+    userId: 'anonymous',
+    videoId: entryData.videoId,
     videoTitle: videoInfo?.title ?? 'Unknown Video',
+    notes: entryData.notes,
+    date: entryData.date,
     module: videoInfo?.module ?? 'Unknown Module',
+    isPublic: entryData.isPublic,
     createdAt: createdAtTimestamp.toDate().toISOString(),
+    authorEmail: undefined, // Always anonymous
   };
 }
 
-// Get all journal entries for a specific user
+// Get all journal entries (no user filtering - open access)
+// NOTE: This used to filter by userId but now returns all entries
 export async function getJournalEntries(userId: string): Promise<JournalEntry[]> {
   const db = getDb();
   const entries: JournalEntry[] = [];
+  
+  // Get all entries instead of filtering by userId
   const q = query(
     collection(db, 'journalEntries'),
-    where('userId', '==', userId),
     orderBy('createdAt', 'desc')
   );
 
@@ -173,13 +181,13 @@ export async function getJournalEntries(userId: string): Promise<JournalEntry[]>
     
     entries.push({
       id: doc.id,
-      userId: data.userId,
+      userId: data.userId || 'anonymous',
       videoId: data.videoId,
       videoTitle: data.videoTitle,
       notes: data.notes,
       date: data.date,
       isPublic: data.isPublic || false,
-      authorEmail: data.authorEmail,
+      authorEmail: undefined, // Strip email for anonymous access
       module: data.module ?? 'Unknown Module',
       createdAt: createdAtTimestamp.toDate().toISOString(),
     });
@@ -205,13 +213,13 @@ export async function getPublicJournalEntries(): Promise<JournalEntry[]> {
     const createdAtTimestamp = data.createdAt as Timestamp;
     entries.push({
       id: doc.id,
-      userId: data.userId,
+      userId: data.userId || 'anonymous',
       videoId: data.videoId,
       videoTitle: data.videoTitle,
       notes: data.notes,
       date: data.date,
       isPublic: true,
-      authorEmail: data.authorEmail,
+      authorEmail: undefined, // Strip email for anonymous access
       module: data.module ?? "Unknown Module",
       createdAt: createdAtTimestamp.toDate().toISOString(),
     });
@@ -219,7 +227,6 @@ export async function getPublicJournalEntries(): Promise<JournalEntry[]> {
 
   return entries;
 }
-
 
 // Get all public journal entries for a specific video
 export async function getPublicJournalEntriesForVideo(videoId: string): Promise<JournalEntry[]> {
@@ -239,13 +246,13 @@ export async function getPublicJournalEntriesForVideo(videoId: string): Promise<
     const createdAtTimestamp = data.createdAt as Timestamp;
     entries.push({
       id: doc.id,
-      userId: data.userId,
+      userId: data.userId || 'anonymous',
       videoId: data.videoId,
       videoTitle: data.videoTitle,
       notes: data.notes,
       date: data.date,
       isPublic: true,
-      authorEmail: data.authorEmail,
+      authorEmail: undefined, // Strip email for anonymous access
       module: data.module ?? "Unknown Module",
       createdAt: createdAtTimestamp.toDate().toISOString(),
     });

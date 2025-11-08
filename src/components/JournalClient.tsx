@@ -11,7 +11,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { PlusCircle, Loader2, Globe, Lock, Send } from 'lucide-react';
 import JournalForm from './JournalForm';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
-import { useAuth } from '@/hooks/use-auth';
 import { addJournalEntry, getJournalEntries, getPublicJournalEntries, JournalEntry, CommunityPost, addCommunityPost, getCommunityPosts } from '@/lib/firestore';
 import { exerciseData } from '@/lib/data';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
@@ -20,12 +19,11 @@ import { Textarea } from './ui/textarea';
 import { Form, FormControl, FormField, FormItem, FormMessage } from './ui/form';
 import { Avatar, AvatarFallback } from './ui/avatar';
 
+// NOTE: All authentication removed - entries and posts are now anonymous
 
 function JournalTable({ entries, isLoading, noEntriesText }: { entries: JournalEntry[], isLoading: boolean, noEntriesText: string }) {
+  // Always display as "Anonymous" since auth is removed
   const getAuthorDisplayName = (entry: JournalEntry) => {
-    if (entry.authorEmail) {
-      return entry.authorEmail.split('@')[0];
-    }
     return 'Anonymous';
   };
 
@@ -60,7 +58,7 @@ function JournalTable({ entries, isLoading, noEntriesText }: { entries: JournalE
                   <TableRow key={entry.id}>
                     <TableCell>
                        <Link href={`/journal/${entry.videoId}`} className="font-medium flex items-center gap-2 hover:underline">
-                        {entry.isPublic ? <Globe className="h-4 w-4 text-blue-500" title="Public"/> : <Lock className="h-4 w-4 text-muted-foreground" title="Private"/>}
+                        {entry.isPublic ? <Globe className="h-4 w-4 text-blue-500" /> : <Lock className="h-4 w-4 text-muted-foreground" />}
                         {entry.videoTitle}
                        </Link>
                       <div className="text-sm text-muted-foreground ml-6">{entry.module}</div>
@@ -91,19 +89,16 @@ const postSchema = z.object({
 type PostFormValues = z.infer<typeof postSchema>;
 
 const getInitials = (email: string | undefined | null) => {
-    if (!email) return 'AN';
-    return email.substring(0, 2).toUpperCase();
+    // Always return 'AN' for Anonymous
+    return 'AN';
 };
 
 const getPostAuthorDisplayName = (post: CommunityPost) => {
-    if (post.authorEmail) {
-      return post.authorEmail.split('@')[0];
-    }
+    // Always return 'Anonymous' since auth is removed
     return 'Anonymous';
 };
 
 function CommunityChat() {
-  const { user } = useAuth();
   const [posts, setPosts] = useState<CommunityPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -125,15 +120,15 @@ function CommunityChat() {
   }, []);
 
   const onSubmit = async (data: PostFormValues) => {
-    if (!user) return;
+    // NOTE: No auth check - all visitors can post anonymously
     setIsSubmitting(true);
 
     try {
       const newPostData = {
-        userId: user.uid,
+        userId: 'anonymous',
         content: data.content,
         createdAt: new Date().toISOString(),
-        authorEmail: user.email ?? undefined,
+        authorEmail: undefined,
       };
       const newPost = await addCommunityPost(newPostData);
       setPosts(prev => [newPost, ...prev]);
@@ -147,43 +142,37 @@ function CommunityChat() {
   
   return (
     <div className="space-y-6">
-      {user && (
-        <Card>
-            <CardHeader>
-                <CardTitle>Post a Comment</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                    <FormField
-                        control={form.control}
-                        name="content"
-                        render={({ field }) => (
-                        <FormItem>
-                            <FormControl>
-                            <Textarea
-                                placeholder="Share your thoughts, questions, and experiences..."
-                                {...field}
-                            />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                        )}
-                    />
-                    <Button type="submit" disabled={isSubmitting}>
-                        {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
-                        Post
-                    </Button>
-                    </form>
-                </Form>
-            </CardContent>
-        </Card>
-      )}
-      {!user && (
-          <div className="text-center p-8 border rounded-lg bg-muted">
-            <p>Please log in to post comments and join the discussion.</p>
-          </div>
-      )}
+      {/* NOTE: All visitors can post - no login required */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Post a Comment</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="content"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Share your thoughts, questions, and experiences..."
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+                Post
+              </Button>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
 
       <div className="space-y-6">
         {isLoading ? (
@@ -219,7 +208,6 @@ function CommunityChat() {
 
 
 export default function JournalClient() {
-  const { user } = useAuth();
   const [myEntries, setMyEntries] = useState<JournalEntry[]>([]);
   const [publicEntries, setPublicEntries] = useState<JournalEntry[]>([]);
   const [isLoadingMine, setIsLoadingMine] = useState(true);
@@ -227,21 +215,17 @@ export default function JournalClient() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("my-entries");
 
-
+  // NOTE: No user check - fetch all entries for open access
   useEffect(() => {
-    if (user) {
-      const fetchEntries = async () => {
-        setIsLoadingMine(true);
-        const userEntries = await getJournalEntries(user.uid);
-        setMyEntries(userEntries);
-        setIsLoadingMine(false);
-      };
-      fetchEntries();
-    } else {
+    const fetchEntries = async () => {
+      setIsLoadingMine(true);
+      // getJournalEntries now returns all entries, not filtered by user
+      const allEntries = await getJournalEntries('anonymous');
+      setMyEntries(allEntries);
       setIsLoadingMine(false);
-      setMyEntries([]);
-    }
-  }, [user]);
+    };
+    fetchEntries();
+  }, []);
 
   useEffect(() => {
     const fetchPublicEntries = async () => {
@@ -254,14 +238,13 @@ export default function JournalClient() {
   }, []);
 
   const handleSaveEntry = async (formData: { videoId: string; notes: string; isPublic: boolean; }) => {
-    if (!user) return;
-    
+    // NOTE: No user check - all visitors can create entries anonymously
     const newEntryData = { 
       ...formData,
-      userId: user.uid,
-      videoTitle: '', // This will be populated by addJournalEntry
+      userId: 'anonymous',
+      videoTitle: '',
       date: new Date().toISOString(),
-      authorEmail: user.email ?? undefined,
+      authorEmail: undefined,
     };
 
     try {
@@ -270,7 +253,7 @@ export default function JournalClient() {
       if (newEntry.isPublic) {
         setPublicEntries(prev => [newEntry, ...prev].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
       }
-      setIsFormOpen(false); // Close the dialog on save
+      setIsFormOpen(false);
     } catch (error) {
         console.error("Failed to save journal entry:", error);
     }
@@ -280,7 +263,8 @@ export default function JournalClient() {
     <div>
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold font-headline text-foreground">Community Journal</h1>
-        {user && activeTab !== 'community-chat' && (
+        {/* NOTE: All visitors can create entries - no auth required */}
+        {activeTab !== 'community-chat' && (
           <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
             <DialogTrigger asChild>
               <Button>
@@ -300,7 +284,7 @@ export default function JournalClient() {
 
        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-3 mb-4">
-          <TabsTrigger value="my-entries">My Entries</TabsTrigger>
+          <TabsTrigger value="my-entries">All Entries</TabsTrigger>
           <TabsTrigger value="public-journal">Public Journal</TabsTrigger>
           <TabsTrigger value="community-chat">Community Chat</TabsTrigger>
         </TabsList>
@@ -308,7 +292,7 @@ export default function JournalClient() {
            <JournalTable 
               entries={myEntries} 
               isLoading={isLoadingMine} 
-              noEntriesText={!user ? "Please log in to view and create journal entries." : 'You have no journal entries yet. Click "New Entry" to add one!'}
+              noEntriesText='No journal entries yet. Click "New Entry" to add one!'
             />
         </TabsContent>
         <TabsContent value="public-journal">

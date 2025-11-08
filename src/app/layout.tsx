@@ -4,8 +4,6 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { cn } from '@/lib/utils';
 import Footer from '@/components/Footer';
-import { AuthProvider } from '@/hooks/use-auth';
-import { Loader2 } from 'lucide-react';
 import { ProgressProvider } from '@/hooks/use-progress';
 
 export const metadata: Metadata = {
@@ -13,6 +11,7 @@ export const metadata: Metadata = {
   description: 'Stimulate your 3rd eye Pineal gland with stereoscopic video exercises.',
 };
 
+// NOTE: AuthProvider removed - application now has open access for all visitors
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -26,13 +25,11 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap" rel="stylesheet" />
       </head>
       <body className={cn('font-body antialiased min-h-screen flex flex-col bg-background text-foreground')}>
-        <AuthProvider>
-          <ProgressProvider>
-            <main className="flex-grow flex flex-col">{children}</main>
-            <Footer />
-            <Toaster />
-          </ProgressProvider>
-        </AuthProvider>
+        <ProgressProvider>
+          <main className="flex-grow flex flex-col">{children}</main>
+          <Footer />
+          <Toaster />
+        </ProgressProvider>
       </body>
     </html>
   );
