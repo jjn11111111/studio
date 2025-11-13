@@ -40,3 +40,14 @@ export default function Home() {
     </Parallax>
   );
 }
+<ParallaxLayer offset={0} speed={0.1}>
+  <animated.div
+    style={{
+      background: 'linear-gradient(to bottom, #0f0c29, #302b63, #24243e)',
+      width: '100%',
+      height: '100%',
+      opacity,
+      animation: 'breathe 20s ease-in-out infinite', // New line for breathing
+    }}
+  />
+</ParallaxLayer>
