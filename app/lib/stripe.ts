@@ -1,22 +1,38 @@
-import Stripe from 'stripe'
+import Stripe from 'stripe';
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-06-20',
-})
+  apiVersion: '2024-06-20', // or latest
+});
 
-export async function getOrCreateCustomer({ userId, email }: { userId: string, email?: string | null }) {
-  const found = await stripe.customers.search({ query: `metadata['user_id']:'${userId}'` })
-  if (found.data.length) return found.data[0]
+// Example: check if user has a stripe_customer_id, else create and save it
+export async function getOrCreateCustomer({ userId, email }: { userId: string; email?: string }) {
+  // This assumes you have a table profile or users with a stripe_customer_id field
+  // 1. Check Supabase for linked customer ID
+  let { data, error } = await supabase
+    .from('profiles') // or users
+    .select('stripe_customer_id')
+    .eq('id', userId)
+    .single();
 
-  if (email) {
-    const emailSearch = await stripe.customers.search({ query: `email:'${email}'` })
-    const existing = emailSearch.data.find(c => c.metadata?.user_id === userId || c.email === email)
-    if (existing) {
-      if (existing.metadata?.user_id !== userId) {
-        await stripe.customers.update(existing.id, { metadata: { user_id: userId } })
-      }
-      return existing
-    }
+  if (error) throw new Error('Could not find user in DB');
+
+  if (data && data.stripe_customer_id) {
+    // 2. Return existing
+    return await stripe.customers.retrieve(data.stripe_customer_id) as Stripe.Customer;
   }
 
-  return stripe.customers.create({ email: email ?? undefined, metadata: { user_id: userId } })
+  // 3. If not, create new Stripe customer
+  const customer = await stripe.customers.create({
+    email,
+    metadata: { userId },
+  });
+
+  // 4. Save the new stripe_customer_id to Supabase
+  const { error: updateError } = await supabase
+    .from('profiles')
+    .update({ stripe_customer_id: customer.id })
+    .eq('id', userId);
+
+  if (updateError) throw new Error('Could not save stripe_customer_id');
+
+  return customer;
 }
